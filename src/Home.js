@@ -221,14 +221,14 @@ const Home = (props) => {
                             </div>
                         </Modal>
                     </li>
-                    {/* <li className='nav-item'>
+                    <li className='nav-item'>
                         <Link
                         to='/share'
                         className='nav-links'
                         >
                         Share
                         </Link>
-                    </li> */}
+                    </li>
                     <li className='nav-item'>
                         <button className='logout nav-links' onClick={handleLogout}>Logout</button>
                     </li>

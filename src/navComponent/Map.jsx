@@ -141,6 +141,7 @@ const Map = () => {
     setCountryModalIsOpen(false);
   }
 
+ 
   return (
     <div>
           <h1 style ={{textAlign: "center"}}> {myMapTitle} </h1>
@@ -156,12 +157,14 @@ const Map = () => {
                                 <h2>Add information to the map </h2>
                                 <br></br>
                                 {" Select a color to this country "} 
-                                <input type = "color" value = {changeColor} onBlur={e => setChangeColor(e.target.value)}></input> 
+                                <input type = "color" value = {changeColor} 
+                                onChange={e => setChangeColor(e.target.value)}
+                                ></input> 
                                 {/* <br></br>
                                 {" Upload an image "} 
                                 <input type="file" /> */}
                                 <br></br>
-                                <input type="text" placeholder= "Add information here" style={{marginTop: "5%", height: "200%"}} onChange={event => setCountryText(event.target.value)}/>
+                                <input type="text" placeholder= "Add information here" style={{marginTop: "5%", height: "200%"}} onBlur={event => setCountryText(event.target.value)}/>
                                 <div className="saveButtons">
                                     <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
                                     <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
