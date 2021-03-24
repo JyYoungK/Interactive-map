@@ -1,11 +1,15 @@
 
 ### Dependencies to download. Open Visual Studio cd to my-app and type 
-`npm i react leaflet react-leaflet bootstrap firebase react-modal`
-`npm i --save react-router-dom`
-`npm i semantic-ui-react`
-`npm i react-native`
-`firebase init` -- in order to run this you might need to download firebase tools https://firebase.google.com/docs/cli
-and set Fire Storing / Hostage
+  `npm i react leaflet react-leaflet bootstrap firebase react-modal`
+  `npm i --save react-router-dom`
+  `npm i semantic-ui-react`
+  `npm install socket.io-client`
+  `npm i react-native`
+  `firebase init` -- in order to run this you might need to download firebase tools https://firebase.google.com/docs/cli
+  and set Fire Storing / Hostage
+
+  ### Under server
+  `npm install --save cors nodemon express socket.io`
 
 ### To use netlify, you must
 `npm run build`
