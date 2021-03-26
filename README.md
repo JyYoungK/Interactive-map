@@ -5,6 +5,7 @@
   `npm i semantic-ui-react`
   `npm install socket.io-client`
   `npm i react-native`
+  `npm install @material-ui/data-grid`
   `firebase init` -- in order to run this you might need to download firebase tools https://firebase.google.com/docs/cli
   and set Fire Storing / Hostage
 
