@@ -81,22 +81,28 @@ export default function App (){
           // storage.ref("users/User:" + user.uid + "/" + mapTitle + "/Images" + i).put(countryData[i].image);
 
           if (userinDB.exists()){ //if a map exists under a username 
-            //1. Choose to update 
+            //1. Choose to update (Change here if you add more data)--------------------------------------------------------
             firebase.database().ref("users/User:" + user.uid + '/' + mapTitle + '/Obj' + i).update({
               CountryISO: countryData[i].ISO,
               CountryColor: countryData[i].color,
               ArrayIndex : countryData[i].arrayIndex,
               CountryText : countryData[i].countryText,
-              Name: countryData[i].name,
+              Population: countryData[i].population,
+              BirthRate: countryData[i].birthrate,
+              DeathRate: countryData[i].deathrate,
+              Name: countryData[i].id,
             });
           }
-          else{ //Create a new map under a username
+          else{ //Create a new map under a username (Change here if you add more data)--------------------------------------------------------
             usersRef.child("User:" + user.uid).child(mapTitle + '/Obj' + i).update({
               CountryISO: countryData[i].ISO,
               CountryColor: countryData[i].color,
               ArrayIndex : countryData[i].arrayIndex,
               CountryText : countryData[i].countryText,
-              Name: countryData[i].name,
+              Population: countryData[i].population,
+              BirthRate: countryData[i].birthrate,
+              DeathRate: countryData[i].deathrate,
+              Name: countryData[i].id,
             });
           }
         }
@@ -127,8 +133,7 @@ export default function App (){
       objData.forEach((function(child) { //never put setState inside a loop. Also this is same function as
         toAdd.push(child.key)     
       }))
-      console.log("Loading all the maps ... ");
-      console.log(toAdd);
+      console.log("Loading all the maps ... " + toAdd);
       setMapTitle(prevMapTitles => [...prevMapTitles, ...toAdd]) //I learned to never put setState inside a loop.
       // setMapTitle([... mapTitle , { //Adds new ISO countryData
       //   Title: toAdd,
@@ -146,14 +151,17 @@ export default function App (){
        objData.forEach(child =>{ //this but older style.
          cData.push(child.val());
 
-         setCountryData((prevCountryData) => {
+         setCountryData((prevCountryData) => { //(Change here if you add more data)--------------------------------------------------------
             return prevCountryData
               .concat({
                 arrayIndex : child.val().ArrayIndex,
                 color: child.val().CountryColor,
                 ISO: child.val().CountryISO,
                 countryText : child.val().CountryText,  
-                name : child.val().Name,      
+                id : child.val().Name,
+                population: child.val().Population,
+                birthrate: child.val().BirthRate,
+                deathrate: child.val().DeathRate, 
               });
          });
 

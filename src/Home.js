@@ -2,23 +2,46 @@ import React, {useState} from "react";
 import './navComponent/pages.css';
 import './Modal.css';
 import { useGlobalState } from "./global-context";
-// import { Image } from 'react-native';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import LoadMap from './navComponent/LoadMap';
 import Share from './navComponent/Share';
 import Modal from 'react-modal';
 import { Form } from 'semantic-ui-react';
+import { DataGrid } from '@material-ui/data-grid';
+import CanadaPhoto from './img/canada.png';
+import USAPhoto from './img/united-states.png';
+import ChinaPhoto from './img/china.png';
+import IndiaPhoto from './img/india.png';
+import RussiaPhoto from './img/russia.png';
+import MexicoPhoto from './img/mexico.png';
+import JapanPhoto from './img/japan.png';
+import { data } from "jquery";
+
+
 // import {storage} from './config/fire';
 
+const columns = [
+    { field: 'id', headerName: 'COUNTRY', width: 140 },
+    { field: 'population', headerName: 'POPULATION', width: 160 },
+    { field: 'birthrate', headerName: 'BIRTH RATE', width: 160 },
+    { field: 'deathrate', headerName: 'DEATH RATE', width: 160 },
+    // { field: 'fullName', headerName: 'Full name', description: 'This column has a value getter and is not sortable.',
+    //   sortable: false,
+    //   width: 160,
+    //   valueGetter: (params) =>
+    //     `${params.getValue('firstName') || ''} ${params.getValue('lastName') || ''}`,
+    // },
+  ];
+  
 const Home = (props) => {
     const [map, setMap] = useState('Map1');
     const [listofcountries, setlistofcountries] = useState([]);
-    const [dataOfCountries, setDataOfCountries] = useState([]);
     const {mapTitle, setMapTitle, setMyMapTitle, countryData} = useGlobalState();
     const {handleLogout, save, preload, load, remove } = props;
     const [saveModalIsOpen, setSaveModalIsOpen] = useState(false);
     const [LoadModalIsOpen, setLoadModalIsOpen] = useState(false);
     const [CompareModalIsOpen, setCompareModalIsOpen] = useState(false);
+    const [SummarizeModalIsOpen, setSummarizeModalIsOpen] = useState(false);
     const modalStyle = {
         overlay: {
             zIndex: 10,
@@ -61,12 +84,26 @@ const Home = (props) => {
     };
 
     function moreThanOneCountry(){ //Save
-        setSaveModalIsOpen(true);
+        if (countryData.length >= 1 ) {
+            setSaveModalIsOpen(true);
+        }
+        else{
+            alert("Please select at least 1 country to save!")
+        }
     }
 
     function saved(){
         setSaveModalIsOpen(false);
         save();
+    }
+
+    function summarize(){
+        if (countryData.length >= 1 ) {
+            setSummarizeModalIsOpen(true);
+        }
+        else{
+            alert("Please select at least 1 country to show the summary!")
+        }
     }
 
     function loadCountry(){ //Load
@@ -78,17 +115,14 @@ const Home = (props) => {
         console.log(countryData);
 
         if (countryData.length >= 2 ) {
-            for (var i = 0; i < countryData.length - 1; i++) {
+            for (var i = 0; i < countryData.length - 2; i++) {
                 console.log(countryData[i])
-                listofcountries.push(countryData[i].name + " and ")
-                dataOfCountries.push(countryData[i].countryText + " | ")
+                listofcountries.push(countryData[i].name + ", ")
             }
+            listofcountries.push(countryData[countryData.length-2].name + " and ")
             listofcountries.push(countryData[countryData.length-1].name)
-            dataOfCountries.push(countryData[countryData.length-1].countryText)
-
             setCompareModalIsOpen(true);
             // setlistofcountries([]); //Resets so that it doesn't add up.
-            // setDataOfCountries([]); //Resets so that it doesn't add up.
         }
         else{
             alert("Please select at least 2 countries to compare!")
@@ -121,8 +155,8 @@ const Home = (props) => {
 
     function closeComparison(){
         setCompareModalIsOpen(false)
+        setSummarizeModalIsOpen(false)
         setlistofcountries([]);
-        setDataOfCountries([]);
     }
 
     const handleRemoveConfirm = (e) => {
@@ -210,11 +244,44 @@ const Home = (props) => {
                         style={ modalStyle2 }
                         >
                             <div className="compareContents">
-                                <h2 style={{margin: "5%"}}> Compare </h2>
-                                <p>Comparison of the following countries: </p>
-                                <p> {listofcountries} </p>
-                                <p> {dataOfCountries} </p>
+                                {/* <h2 style={{margin: "5%"}}> Compare </h2> */}
+                                <h2>Comparison of the following countries: </h2>
+                                <h2> {listofcountries} </h2>
+                                <br></br>
+
+                                <div style={{ height: 400, width: '100%' }}>
+                                    <DataGrid rows={countryData} columns={columns} pageSize={10}/>
+                                    {/* If you want checkbox <DataGrid rows={rows} columns={columns} pageSize={10} checkboxSelection /> */}
+                                </div>
                                 {/* <Image source={{ uri: url }}/> */}
+                                <div className="compareButtons">
+                                    <button onClick = {closeComparison}> Close </button>
+                                </div>
+                            </div>
+                        </Modal>
+                    </li>
+                    <li className='nav-item'>
+                    <button className='logout nav-links' onClick={summarize}>Summary</button>
+                        <Modal isOpen={SummarizeModalIsOpen} //Modal open depends on setModal
+                        ariaHideApp={false} //Hides annoying error
+                        onRequestClose={closeComparison} //Closes the modal if clicked outside of modal or esc
+                        style={ modalStyle2 }
+                        >
+                            <div className="compareContents">
+                                <h2>Summary: </h2>
+                                <img src={CanadaPhoto} width="100" height="100"/> <h5>'Canada', population: 37000000, birthrate: 10.24, deathrate: 7.91</h5>
+                                <br></br>
+                                <img src={IndiaPhoto} width="100" height="100"/> <h5>'India', population: 1380000000, birthrate: 18.18, deathrate: 7.25</h5>
+                                <br></br>
+                                <img src={USAPhoto} width="100" height="100"/><h5>'USA', population: 331000000, birthrate: 12.38, deathrate: 8.31</h5>
+                                <br></br>
+                                <img src={RussiaPhoto} width="100" height="100"/><h5>'Russia', population: 145934000, birthrate: 9.98, deathrate: 13.4</h5>
+                                <br></br>
+                                <img src={JapanPhoto} width="100" height="100"/><h5>'Japan', population: 126476000, birthrate: 7.32, deathrate: 10.19</h5>
+                                <br></br>
+                                <img src={MexicoPhoto} width="100" height="100"/><h5>'Mexico', population: 128932000, birthrate: 17.56, deathrate: 5.43</h5>
+                                <br></br>
+                                <img src={ChinaPhoto} width="100" height="100"/><h5>'China', population: 1439000000, birthrate: 11.62, deathrate: 8.23</h5>
                                 <div className="compareButtons">
                                     <button onClick = {closeComparison}> Close </button>
                                 </div>

@@ -8,7 +8,7 @@ import Modal from 'react-modal';
 import { features } from "../data/countries.json";
 
 const Map = () => {
-  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText, countryEvent, setCountryEvent, myImage } = useGlobalState();
+  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText, population, setPopulation, birthrate, setBirthRate, deathrate, setDeathRate,countryEvent, setCountryEvent, myImage } = useGlobalState();
   const [countryModalIsOpen, setCountryModalIsOpen] = useState(false);
   const modalStyle = {
     overlay: {
@@ -79,10 +79,13 @@ const Map = () => {
           (item) => item.ISO !== countryEvent.target.feature.properties.ISO_A3
         )
         .concat({
-          //Adds new ISO countryData
+          //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
           ISO: countryEvent.target.feature.properties.ISO_A3,
           color: changeColor,
-          name : countryEvent.target.feature.properties.ADMIN,
+          population: population,
+          birthrate: birthrate,
+          deathrate: deathrate,
+          id : countryEvent.target.feature.properties.ADMIN,
           arrayIndex : countryEvent.target.feature.properties.arrayIndex,
           countryText : countryText,   
           // image : myImage,     
@@ -93,7 +96,8 @@ const Map = () => {
     for (let i = 0; i < features.length; i++) {
       const country = features[i];
       if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
-        country.properties.countryText = " : " + countryText;
+        // country.properties.countryText = " : " + countryText;\        
+        country.properties.countryText = " : Data Available";
         country.properties.color = changeColor;
       }
       countries.push(country)
@@ -156,15 +160,18 @@ const Map = () => {
                             <div className="saveContents">
                                 <h2>Add information to the map </h2>
                                 <br></br>
-                                {" Select a color to this country "} 
-                                <input type = "color" value = {changeColor} 
-                                onChange={e => setChangeColor(e.target.value)}
-                                ></input> 
+                                <div> Select a color to this country <input type = "color" value = {changeColor} onChange={e => setChangeColor(e.target.value)}/>  </div>
                                 {/* <br></br>
                                 {" Upload an image "} 
                                 <input type="file" /> */}
                                 <br></br>
-                                <input type="text" placeholder= "Add information here" style={{marginTop: "5%", height: "200%"}} onBlur={event => setCountryText(event.target.value)}/>
+                                <div> Population <input type="number" placeholder= "Population" min="1" max="50000000" onBlur={event => setPopulation(event.target.value)}/></div>
+                                <br></br>
+                                <div> Birth Rate <input type="number" placeholder= "Birth Rate" min="1" max="10000" onBlur={event => setBirthRate(event.target.value)}/></div>
+                                <br></br>
+                                <div> Death Rate <input type="number" placeholder= "Death Rate" min="1" max="10000" onBlur={event => setDeathRate(event.target.value)}/> </div>
+                                <br></br>
+                                <input type="text" placeholder= "Add additional information here" style={{marginTop: "5%", height: "200%"}} onBlur={event => setCountryText(event.target.value)}/>
                                 <div className="saveButtons">
                                     <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
                                     <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  

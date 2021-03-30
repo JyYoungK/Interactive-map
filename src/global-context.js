@@ -9,6 +9,9 @@ const AuthProvider = (props) => {
     const [countryText, setCountryText] = useState("");
     const [countryData, setCountryData] = useState([]);
     const [coloredMap, setColoredMap] = useState([]);
+    const [population, setPopulation] = useState([]);
+    const [birthrate, setBirthRate] = useState([]);
+    const [deathrate, setDeathRate] = useState([]);
     const [changeColor, setChangeColor] = useState("#ffff00");
     const [countryColor, setCountryColor] = useState("");
     const [countryEvent, setCountryEvent] = useState([]);
@@ -22,6 +25,9 @@ const AuthProvider = (props) => {
         changeColor, setChangeColor,
         countryColor, setCountryColor,
         coloredMap, setColoredMap,
+        population, setPopulation,
+        birthrate, setBirthRate,
+        deathrate, setDeathRate,
         countryText, setCountryText,
         countryEvent, setCountryEvent,
         myImage, setMyImage
