@@ -8,15 +8,6 @@ import Share from './navComponent/Share';
 import Modal from 'react-modal';
 import { Form } from 'semantic-ui-react';
 import { DataGrid } from '@material-ui/data-grid';
-import CanadaPhoto from './img/canada.png';
-import USAPhoto from './img/united-states.png';
-import ChinaPhoto from './img/china.png';
-import IndiaPhoto from './img/india.png';
-import RussiaPhoto from './img/russia.png';
-import MexicoPhoto from './img/mexico.png';
-import JapanPhoto from './img/japan.png';
-import { data } from "jquery";
-
 
 // import {storage} from './config/fire';
 
@@ -36,6 +27,7 @@ const columns = [
 const Home = (props) => {
     const [map, setMap] = useState('Map1');
     const [listofcountries, setlistofcountries] = useState([]);
+    const [dataofcountries, setdataofcountries] = useState([]);
     const {mapTitle, setMapTitle, setMyMapTitle, countryData} = useGlobalState();
     const {handleLogout, save, preload, load, remove } = props;
     const [saveModalIsOpen, setSaveModalIsOpen] = useState(false);
@@ -97,8 +89,39 @@ const Home = (props) => {
         save();
     }
 
+    function loadCountry(){ //Load
+        setLoadModalIsOpen(true);
+        preload();
+    }
+
+    function moreThanTwoCountries(){ //Compare
+        if (countryData.length >= 2 ) {
+            console.log("Comparison Opened. These are the available country data: ");
+            console.log(countryData)
+            for (var i = 0; i < countryData.length - 2; i++) {
+                console.log(countryData[i])
+                listofcountries.push(countryData[i].id + ", ")
+            }
+            listofcountries.push(countryData[countryData.length-2].id + " and ")
+            listofcountries.push(countryData[countryData.length-1].id)
+            setCompareModalIsOpen(true);
+            //setlistofcountries([]); //Resets so that it doesn't add up.
+        }
+        else{
+            alert("Please select at least 2 countries to compare!")
+        }
+    }
+
     function summarize(){
         if (countryData.length >= 1 ) {
+            console.log("Summarize opened. These are the available country data: ");
+            console.log(countryData)
+            for (var i = 0; i < countryData.length; i++) {
+                dataofcountries.push(<span className='indent' key={i}> 
+                {countryData[i].id}{populationResult(i)},{birthrateResult(i)},{deathrateResult(i)}
+                <br></br>
+                </span>)
+            }
             setSummarizeModalIsOpen(true);
         }
         else{
@@ -106,27 +129,25 @@ const Home = (props) => {
         }
     }
 
-    function loadCountry(){ //Load
-        setLoadModalIsOpen(true);
-        preload();
+    function populationResult(i){
+        if (countryData[i].population > 0){
+            return " has population of " + countryData[i].population
+        }
+        return " has no population data available"
     }
 
-    function moreThanTwoCountries(){ //Compare
-        console.log(countryData);
+    function birthrateResult(i){
+        if (countryData[i].birthrate > 0){
+            return " has birth rate of " + countryData[i].birthrate
+        }
+        return " has no birth rate data available"
+    }
 
-        if (countryData.length >= 2 ) {
-            for (var i = 0; i < countryData.length - 2; i++) {
-                console.log(countryData[i])
-                listofcountries.push(countryData[i].name + ", ")
-            }
-            listofcountries.push(countryData[countryData.length-2].name + " and ")
-            listofcountries.push(countryData[countryData.length-1].name)
-            setCompareModalIsOpen(true);
-            // setlistofcountries([]); //Resets so that it doesn't add up.
+    function deathrateResult(i){
+        if (countryData[i].deathrate > 0){
+            return " has death rate of " + countryData[i].deathrate
         }
-        else{
-            alert("Please select at least 2 countries to compare!")
-        }
+        return " has no death rate data available"
     }
 
     function loaded () {
@@ -156,7 +177,8 @@ const Home = (props) => {
     function closeComparison(){
         setCompareModalIsOpen(false)
         setSummarizeModalIsOpen(false)
-        setlistofcountries([]);
+        setlistofcountries([]);//Reset so it doesn't add up
+        setdataofcountries([]);//Reset so it doesn't add up
     }
 
     const handleRemoveConfirm = (e) => {
@@ -269,19 +291,9 @@ const Home = (props) => {
                         >
                             <div className="compareContents">
                                 <h2>Summary: </h2>
-                                <img src={CanadaPhoto} width="100" height="100"/> <h5>'Canada', population: 37000000, birthrate: 10.24, deathrate: 7.91</h5>
                                 <br></br>
-                                <img src={IndiaPhoto} width="100" height="100"/> <h5>'India', population: 1380000000, birthrate: 18.18, deathrate: 7.25</h5>
                                 <br></br>
-                                <img src={USAPhoto} width="100" height="100"/><h5>'USA', population: 331000000, birthrate: 12.38, deathrate: 8.31</h5>
-                                <br></br>
-                                <img src={RussiaPhoto} width="100" height="100"/><h5>'Russia', population: 145934000, birthrate: 9.98, deathrate: 13.4</h5>
-                                <br></br>
-                                <img src={JapanPhoto} width="100" height="100"/><h5>'Japan', population: 126476000, birthrate: 7.32, deathrate: 10.19</h5>
-                                <br></br>
-                                <img src={MexicoPhoto} width="100" height="100"/><h5>'Mexico', population: 128932000, birthrate: 17.56, deathrate: 5.43</h5>
-                                <br></br>
-                                <img src={ChinaPhoto} width="100" height="100"/><h5>'China', population: 1439000000, birthrate: 11.62, deathrate: 8.23</h5>
+                                {dataofcountries}
                                 <div className="compareButtons">
                                     <button onClick = {closeComparison}> Close </button>
                                 </div>
