@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { MapContainer, GeoJSON,} from "react-leaflet";
+// import {Icon} from 'react-native-elements';
+// import TagInput from 'react-native-tags-input';
 import "leaflet/dist/leaflet.css";
 import "./MyMap.css";
 import './pages.css';
 import { useGlobalState } from "../global-context";
 import Modal from 'react-modal';
 import { features } from "../data/countries.json";
+import ListItems from './ListItems'
+
 
 const Map = () => {
-  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText, population, setPopulation, birthrate, setBirthRate, deathrate, setDeathRate,countryEvent, setCountryEvent, myImage } = useGlobalState();
+  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText,countryEvent, inputTag, setInputTag, tag1, settag1, tag2, settag2, tag3, settag3, tag1value, settag1value, tag2value, settag2value, tag3value, settag3value, setCountryEvent, myImage } = useGlobalState();
   const [countryModalIsOpen, setCountryModalIsOpen] = useState(false);
   const modalStyle = {
     overlay: {
@@ -82,9 +86,12 @@ const Map = () => {
           //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
           ISO: countryEvent.target.feature.properties.ISO_A3,
           color: changeColor,
-          population: population,
-          birthrate: birthrate,
-          deathrate: deathrate,
+          tag1name: tag1,
+          tag2name: tag2,
+          tag3name: tag3,
+          tag1value: tag1value,
+          tag2value: tag2value,
+          tag3value: tag3value,
           id : countryEvent.target.feature.properties.ADMIN,
           arrayIndex : countryEvent.target.feature.properties.arrayIndex,
           countryText : countryText,   
@@ -145,12 +152,30 @@ const Map = () => {
     setCountryModalIsOpen(false);
   }
 
+  function addTag(e){
+    e.preventDefault();
+    // setCountryData(countryData.filter(item => item.ISO !== countryEvent.target.feature.properties.ISO_A3)); //Removes the countryData with matching ISO
+    
+    // setCountryData([... countryData , { //Adds new ISO countryData
+    //   ISO: countryEvent.target.feature.properties.ISO_A3,
+    // }]);  
+    console.log(inputTag);
+  }
+
  
+
   return (
     <div>
+          <form className="tag-area" onSubmit={addTag}>
+              <input type="text" placeholder= "Enter a tag" className="addTagInput" onBlur={event => setInputTag(event.target.value)}/>
+              <button type="submit" className="addTagButton"> Add </button>
+              <ListItems/>
+          </form>
+
           <h1 style ={{textAlign: "center"}}> {myMapTitle} </h1>
           <MapContainer style = {{height: "80vh", zIndex : 1}} doubleClickZoom={false} zoom = {2} minZoom = {2} center = {[50, 13]}>{/* Displays the zoom button*/}
-              <GeoJSON key={JSON.stringify(coloredMap, countryText)} style = {countryStyle} onEachFeature={onEachCountry} data = {coloredMap} />{/*Displays the map */}
+              {/* Displays the map */}
+              <GeoJSON key={JSON.stringify(coloredMap, countryText)} style = {countryStyle} onEachFeature={onEachCountry} data = {coloredMap} /> 
           </MapContainer>
           <Modal isOpen={countryModalIsOpen} //Modal open depends on setModal
                         ariaHideApp={false} //Hides annoying error
@@ -165,12 +190,25 @@ const Map = () => {
                                 {" Upload an image "} 
                                 <input type="file" /> */}
                                 <br></br>
-                                <div> Population <input type="number" placeholder= "Population" min="1" max="50000000" onBlur={event => setPopulation(event.target.value)}/></div>
+                                <div> 
+                                  <input type="text" placeholder= "Enter a tag" style={{marginTop: "5%", width:"40%",height: "200%"}} onBlur={event => settag1(event.target.value)}/>
+                                  <input type="number" placeholder= {tag1 + " value"} style={{marginLeft: "5%"}} onBlur={event => settag1value(event.target.value)}/>
+                                </div>
                                 <br></br>
-                                <div> Birth Rate <input type="number" placeholder= "Birth Rate" min="1" max="10000" onBlur={event => setBirthRate(event.target.value)}/></div>
+                                <div> 
+                                  <input type="text" placeholder= "Enter a tag" style={{marginTop: "5%", width:"40%",height: "200%"}} onBlur={event => settag2(event.target.value)}/>
+                                  <input type="number" placeholder= {tag2 + " value"} style={{marginLeft: "5%"}} onBlur={event => settag2value(event.target.value)}/>
+                                </div>
+                                <br></br>
+                                <div> 
+                                  <input type="text" placeholder= "Enter a tag" style={{marginTop: "5%", width:"40%",height: "200%"}} onBlur={event => settag3(event.target.value)}/>
+                                  <input type="number" placeholder= {tag3 + " value"} style={{marginLeft: "5%"}} onBlur={event => settag3value(event.target.value)}/>
+                                </div>
+                                <br></br>
+                                {/* <div> Birth Rate <input type="number" placeholder= "Birth Rate" min="1" max="10000" onBlur={event => setBirthRate(event.target.value)}/></div>
                                 <br></br>
                                 <div> Death Rate <input type="number" placeholder= "Death Rate" min="1" max="10000" onBlur={event => setDeathRate(event.target.value)}/> </div>
-                                <br></br>
+                                <br></br> */}
                                 <input type="text" placeholder= "Add additional information here" style={{marginTop: "5%", height: "200%"}} onBlur={event => setCountryText(event.target.value)}/>
                                 <div className="saveButtons">
                                     <button className="saveButtons" onClick = {saveCountryData}> Save </button> 

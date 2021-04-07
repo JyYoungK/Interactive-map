@@ -12,10 +12,10 @@ import { DataGrid } from '@material-ui/data-grid';
 // import {storage} from './config/fire';
 
 const columns = [
-    { field: 'id', headerName: 'COUNTRY', width: 140 },
-    { field: 'population', headerName: 'POPULATION', width: 160 },
-    { field: 'birthrate', headerName: 'BIRTH RATE', width: 160 },
-    { field: 'deathrate', headerName: 'DEATH RATE', width: 160 },
+    // { field: 'id', headerName: 'COUNTRY', width: 140 },
+    // { field: 'population', headerName: 'POPULATION', width: 160 },
+    // { field: 'birthrate', headerName: 'BIRTH RATE', width: 160 },
+    // { field: 'deathrate', headerName: 'DEATH RATE', width: 160 },
     // { field: 'fullName', headerName: 'Full name', description: 'This column has a value getter and is not sortable.',
     //   sortable: false,
     //   width: 160,
@@ -104,6 +104,13 @@ const Home = (props) => {
             }
             listofcountries.push(countryData[countryData.length-2].id + " and ")
             listofcountries.push(countryData[countryData.length-1].id)
+
+            //Columns
+            columns.push({field: 'id', headerName: 'COUNTRY', width: 140})
+            columns.push({field: 'tag1value', headerName: countryData[0].tag1name, width: 140})
+            columns.push({field: 'tag2value', headerName: countryData[0].tag2name, width: 140})
+            columns.push({field: 'tag3value', headerName: countryData[0].tag3name, width: 140})
+
             setCompareModalIsOpen(true);
             //setlistofcountries([]); //Resets so that it doesn't add up.
         }
@@ -117,8 +124,11 @@ const Home = (props) => {
             console.log("Summarize opened. These are the available country data: ");
             console.log(countryData)
             for (var i = 0; i < countryData.length; i++) {
-                dataofcountries.push(<span className='indent' key={i}> 
-                {countryData[i].id}{populationResult(i)},{birthrateResult(i)},{deathrateResult(i)}
+                dataofcountries.push(<span key={i}> 
+                {countryData[i].id}{firstTagResult(i)},{secondTagResult(i)},{thirdTagResult(i)}. 
+                <br></br>
+                {additionalText(i)}
+                <br></br>
                 <br></br>
                 </span>)
             }
@@ -129,25 +139,32 @@ const Home = (props) => {
         }
     }
 
-    function populationResult(i){
-        if (countryData[i].population > 0){
-            return " has population of " + countryData[i].population
+    function firstTagResult(i){
+        if (countryData[i].tag1Value > 0){
+            return " has a " + countryData[i].tag1Name + " of " + countryData[i].tag1Value
         }
-        return " has no population data available"
+        return " has no data available"
     }
 
-    function birthrateResult(i){
-        if (countryData[i].birthrate > 0){
-            return " has birth rate of " + countryData[i].birthrate
+    function secondTagResult(i){
+        if (countryData[i].tag2Value > 0){
+            return " has a " + countryData[i].tag2Name + " of " + countryData[i].tag2Value
         }
-        return " has no birth rate data available"
+        return " has no data available"
     }
 
-    function deathrateResult(i){
-        if (countryData[i].deathrate > 0){
-            return " has death rate of " + countryData[i].deathrate
+    function thirdTagResult(i){
+        if (countryData[i].tag3Value > 0){
+            return " has a " + countryData[i].tag3Name + " of " + countryData[i].tag3Value
         }
-        return " has no death rate data available"
+        return " and has no data available"
+    }
+
+    function additionalText(i){
+        if (countryData[i].countryText !== ""){
+            return countryData[i].id + "'s additional note: " + countryData[i].countryText
+        }
+        return countryData[i].id + " has no additional text available"
     }
 
     function loaded () {
@@ -183,9 +200,12 @@ const Home = (props) => {
 
     const handleRemoveConfirm = (e) => {
         const name = e.target.className
-        if (window.confirm("Deleting this will remove all the data inside. Are you sure?")){
-            setMapTitle(mapTitle.filter(item => item !== name));
-            remove(name);
+        if (name.length > 0){
+            if (window.confirm("Deleting this will remove all the data inside. Are you sure?")){
+                setMapTitle(mapTitle.filter(item => item !== name));
+                remove(name);
+                setLoadModalIsOpen(false)
+            }
         }
     };
 
@@ -293,7 +313,9 @@ const Home = (props) => {
                                 <h2>Summary: </h2>
                                 <br></br>
                                 <br></br>
-                                {dataofcountries}
+                                <div className="summarizedText">
+                                    {dataofcountries}
+                                </div>
                                 <div className="compareButtons">
                                     <button onClick = {closeComparison}> Close </button>
                                 </div>

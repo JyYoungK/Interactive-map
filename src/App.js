@@ -8,7 +8,6 @@ import { useGlobalState } from "./global-context";
 import { features } from "./data/countries.json";
 import {storage} from './config/fire';
 
-
 export default function App (){
   const { user, setUser, mapTitle, setMapTitle, countryData, setColoredMap, setCountryData} = useGlobalState();
   const [email, setEmail] = useState('');
@@ -87,9 +86,12 @@ export default function App (){
               CountryColor: countryData[i].color,
               ArrayIndex : countryData[i].arrayIndex,
               CountryText : countryData[i].countryText,
-              Population: countryData[i].population,
-              BirthRate: countryData[i].birthrate,
-              DeathRate: countryData[i].deathrate,
+              Tag1Name: countryData[i].tag1name,
+              Tag2Name: countryData[i].tag2name,
+              Tag3Name: countryData[i].tag3name,
+              Tag1Value: countryData[i].tag1value,
+              Tag2Value: countryData[i].tag2value,
+              Tag3Value: countryData[i].tag3value,
               Name: countryData[i].id,
             });
           }
@@ -99,9 +101,12 @@ export default function App (){
               CountryColor: countryData[i].color,
               ArrayIndex : countryData[i].arrayIndex,
               CountryText : countryData[i].countryText,
-              Population: countryData[i].population,
-              BirthRate: countryData[i].birthrate,
-              DeathRate: countryData[i].deathrate,
+              Tag1Name: countryData[i].tag1name,
+              Tag2Name: countryData[i].tag2name,
+              Tag3Name: countryData[i].tag3name,
+              Tag1Value: countryData[i].tag1value,
+              Tag2Value: countryData[i].tag2value,
+              Tag3Value: countryData[i].tag3value,
               Name: countryData[i].id,
             });
           }
@@ -159,9 +164,12 @@ export default function App (){
                 ISO: child.val().CountryISO,
                 countryText : child.val().CountryText,  
                 id : child.val().Name,
-                population: child.val().Population,
-                birthrate: child.val().BirthRate,
-                deathrate: child.val().DeathRate, 
+                tag1Name: child.val().Tag1Name,
+                tag2Name: child.val().Tag2Name,
+                tag3Name: child.val().Tag3Name,
+                tag1Value: child.val().Tag1Value,
+                tag2Value: child.val().Tag2Value,
+                tag3Value: child.val().Tag3Value, 
               });
          });
 

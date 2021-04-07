@@ -9,9 +9,13 @@ const AuthProvider = (props) => {
     const [countryText, setCountryText] = useState("");
     const [countryData, setCountryData] = useState([]);
     const [coloredMap, setColoredMap] = useState([]);
-    const [population, setPopulation] = useState([]);
-    const [birthrate, setBirthRate] = useState([]);
-    const [deathrate, setDeathRate] = useState([]);
+    const [inputTag, setInputTag] = useState([]);
+    const [tag1, settag1] = useState([]);
+    const [tag2, settag2] = useState([]);
+    const [tag3, settag3] = useState([]);
+    const [tag1value, settag1value] = useState([]);
+    const [tag2value, settag2value] = useState([]);
+    const [tag3value, settag3value] = useState([]);
     const [changeColor, setChangeColor] = useState("#ffff00");
     const [countryColor, setCountryColor] = useState("");
     const [countryEvent, setCountryEvent] = useState([]);
@@ -25,11 +29,15 @@ const AuthProvider = (props) => {
         changeColor, setChangeColor,
         countryColor, setCountryColor,
         coloredMap, setColoredMap,
-        population, setPopulation,
-        birthrate, setBirthRate,
-        deathrate, setDeathRate,
         countryText, setCountryText,
         countryEvent, setCountryEvent,
+        inputTag, setInputTag, 
+        tag1, settag1,
+        tag2, settag2,
+        tag3, settag3,
+        tag1value, settag1value,
+        tag2value, settag2value,
+        tag3value, settag3value,
         myImage, setMyImage
   };
   return <AuthContext.Provider value= {authContextValue} {...props}/>
