@@ -6,6 +6,7 @@
   `npm install socket.io-client`
   `npm i react-native`
   `npm install @material-ui/data-grid`
+  `npm install react-native-tags-input --save`
   `firebase init` -- in order to run this you might need to download firebase tools https://firebase.google.com/docs/cli
   and set Fire Storing / Hostage
 
