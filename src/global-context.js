@@ -10,6 +10,7 @@ const AuthProvider = (props) => {
     const [countryData, setCountryData] = useState([]);
     const [coloredMap, setColoredMap] = useState([]);
     const [inputTag, setInputTag] = useState([]);
+    const [inputTagData, setInputTagData] = useState([]);
     const [tag1, settag1] = useState([]);
     const [tag2, settag2] = useState([]);
     const [tag3, settag3] = useState([]);
@@ -32,6 +33,7 @@ const AuthProvider = (props) => {
         countryText, setCountryText,
         countryEvent, setCountryEvent,
         inputTag, setInputTag, 
+        inputTagData, setInputTagData,
         tag1, settag1,
         tag2, settag2,
         tag3, settag3,

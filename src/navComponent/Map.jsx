@@ -8,11 +8,11 @@ import './pages.css';
 import { useGlobalState } from "../global-context";
 import Modal from 'react-modal';
 import { features } from "../data/countries.json";
-import ListItems from './ListItems'
+import ListItems from './ListTags'
 
 
 const Map = () => {
-  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText,countryEvent, inputTag, setInputTag, tag1, settag1, tag2, settag2, tag3, settag3, tag1value, settag1value, tag2value, settag2value, tag3value, settag3value, setCountryEvent, myImage } = useGlobalState();
+  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText,countryEvent, inputTag, setInputTag, inputTagData, setInputTagData, tag1, settag1, tag2, settag2, tag3, settag3, tag1value, settag1value, tag2value, settag2value, tag3value, settag3value, setCountryEvent, myImage } = useGlobalState();
   const [countryModalIsOpen, setCountryModalIsOpen] = useState(false);
   const modalStyle = {
     overlay: {
@@ -155,20 +155,19 @@ const Map = () => {
   function addTag(e){
     e.preventDefault();
     // setCountryData(countryData.filter(item => item.ISO !== countryEvent.target.feature.properties.ISO_A3)); //Removes the countryData with matching ISO
-    
-    // setCountryData([... countryData , { //Adds new ISO countryData
-    //   ISO: countryEvent.target.feature.properties.ISO_A3,
-    // }]);  
-    console.log(inputTag);
+    setInputTagData([... inputTagData , { //Adds new ISO countryData
+      data: inputTag,
+    }]);  
+    console.log(inputTagData);
   }
 
  
 
   return (
     <div>
-          <form className="tag-area" onSubmit={addTag}>
+          <form className="tag-area">
               <input type="text" placeholder= "Enter a tag" className="addTagInput" onBlur={event => setInputTag(event.target.value)}/>
-              <button type="submit" className="addTagButton"> Add </button>
+              <button type="submit" className="addTagButton" onClick = {addTag}> Add </button>
               <ListItems/>
           </form>
 

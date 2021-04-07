@@ -1,0 +1,12 @@
+.listTags{
+    display: flex;
+    align-items: center;
+    margin: 5px;
+    flex-direction: row;
+}
+
+.listTags p{
+    background-color: rgb(255, 110, 134);
+    margin-left: 5px;
+    border-radius: 5px;
+}
