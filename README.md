@@ -10,6 +10,7 @@
   `npm i react-tag-input --legacy-peer-deps`
   `npm i --save @fortawesome/free-solid-svg-icons`
   `npm i --save @fortawesome/fontawesome-svg-core`
+  `npm i --save @fortawesome/react-fontawesome`
   `firebase init` -- in order to run this you might need to download firebase tools https://firebase.google.com/docs/cli
   and set Fire Storing / Hostage
 
