@@ -160,7 +160,7 @@ const Map = () => {
     e.preventDefault();
     if (!(inputTagData.filter(tagData => tagData.data === inputTag).length > 0)){ //Checks if its not duplicate
       if (inputTagData.length < 3){
-        setInputTagData([... inputTagData , { //Adds new ISO countryData
+        setInputTagData([... inputTagData , {
           data: inputTag,
         }]);  
       }
@@ -208,15 +208,11 @@ const Map = () => {
                                     { inputTagData.map((localState) =>(
                                         <div>
                                             <div className="tagData2"> {localState.data} </div>
-                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={event => settag1(event.target.value)}/> </div>
+                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={event => settag1(event.target.value) }/> </div>
                                         </div>
                                     )) }
                                 </div>
-                                {/* <div> Birth Rate <input type="number" placeholder= "Birth Rate" min="1" max="10000" onBlur={event => setBirthRate(event.target.value)}/></div>
-                                <br></br>
-                                <div> Death Rate <input type="number" placeholder= "Death Rate" min="1" max="10000" onBlur={event => setDeathRate(event.target.value)}/> </div>
-                                <br></br> */}
-                                {/* <input type="text" placeholder= "Add additional information here" style={{marginTop: "5%", height: "200%"}} onBlur={event => setCountryText(event.target.value)}/> */}
+  
                                 <div className="saveButtons">
                                     <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
                                     <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
