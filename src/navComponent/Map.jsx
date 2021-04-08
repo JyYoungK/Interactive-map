@@ -8,7 +8,11 @@ import './pages.css';
 import { useGlobalState } from "../global-context";
 import Modal from 'react-modal';
 import { features } from "../data/countries.json";
-import ListItems from './ListTags'
+import ListTags from './ListTags'
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {faTrash} from '@fortawesome/free-solid-svg-icons';
+
+library.add(faTrash);
 
 
 const Map = () => {
@@ -154,21 +158,32 @@ const Map = () => {
 
   function addTag(e){
     e.preventDefault();
-    // setCountryData(countryData.filter(item => item.ISO !== countryEvent.target.feature.properties.ISO_A3)); //Removes the countryData with matching ISO
-    setInputTagData([... inputTagData , { //Adds new ISO countryData
-      data: inputTag,
-    }]);  
-    console.log(inputTagData);
+    if (!(inputTagData.filter(tagData => tagData.data === inputTag).length > 0)){ //Checks if its not duplicate
+      if (inputTagData.length < 3){
+        setInputTagData([... inputTagData , { //Adds new ISO countryData
+          data: inputTag,
+        }]);  
+      }
+      else{
+        alert("You have exceeded the max number of tags!")
+      }
+    }
+    else{
+      alert("Same tag already exists!")
+    }
   }
 
+  const toInputUppercase = e => {
+    e.target.value = ("" + e.target.value).toUpperCase();
+  }
  
 
   return (
     <div>
           <form className="tag-area">
-              <input type="text" placeholder= "Enter a tag" className="addTagInput" onBlur={event => setInputTag(event.target.value)}/>
+              <input type="text" placeholder= "Enter a tag" className="addTagInput" onBlur={event => setInputTag(event.target.value)} onInput={toInputUppercase}/>
               <button type="submit" className="addTagButton" onClick = {addTag}> Add </button>
-              <ListItems/>
+              <ListTags/>
           </form>
 
           <h1 style ={{textAlign: "center"}}> {myMapTitle} </h1>
@@ -189,26 +204,19 @@ const Map = () => {
                                 {" Upload an image "} 
                                 <input type="file" /> */}
                                 <br></br>
-                                <div> 
-                                  <input type="text" placeholder= "Enter a tag" style={{marginTop: "5%", width:"40%",height: "200%"}} onBlur={event => settag1(event.target.value)}/>
-                                  <input type="number" placeholder= {tag1 + " value"} style={{marginLeft: "5%"}} onBlur={event => settag1value(event.target.value)}/>
+                                <div>
+                                    { inputTagData.map((localState) =>(
+                                        <div>
+                                            <div className="tagData2"> {localState.data} </div>
+                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={event => settag1(event.target.value)}/> </div>
+                                        </div>
+                                    )) }
                                 </div>
-                                <br></br>
-                                <div> 
-                                  <input type="text" placeholder= "Enter a tag" style={{marginTop: "5%", width:"40%",height: "200%"}} onBlur={event => settag2(event.target.value)}/>
-                                  <input type="number" placeholder= {tag2 + " value"} style={{marginLeft: "5%"}} onBlur={event => settag2value(event.target.value)}/>
-                                </div>
-                                <br></br>
-                                <div> 
-                                  <input type="text" placeholder= "Enter a tag" style={{marginTop: "5%", width:"40%",height: "200%"}} onBlur={event => settag3(event.target.value)}/>
-                                  <input type="number" placeholder= {tag3 + " value"} style={{marginLeft: "5%"}} onBlur={event => settag3value(event.target.value)}/>
-                                </div>
-                                <br></br>
                                 {/* <div> Birth Rate <input type="number" placeholder= "Birth Rate" min="1" max="10000" onBlur={event => setBirthRate(event.target.value)}/></div>
                                 <br></br>
                                 <div> Death Rate <input type="number" placeholder= "Death Rate" min="1" max="10000" onBlur={event => setDeathRate(event.target.value)}/> </div>
                                 <br></br> */}
-                                <input type="text" placeholder= "Add additional information here" style={{marginTop: "5%", height: "200%"}} onBlur={event => setCountryText(event.target.value)}/>
+                                {/* <input type="text" placeholder= "Add additional information here" style={{marginTop: "5%", height: "200%"}} onBlur={event => setCountryText(event.target.value)}/> */}
                                 <div className="saveButtons">
                                     <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
                                     <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  

@@ -5,8 +5,37 @@
     flex-direction: row;
 }
 
-.listTags p{
-    background-color: rgb(255, 110, 134);
+.tagArea{
+    background-color: rgb(235, 83, 189);
     margin-left: 5px;
-    border-radius: 5px;
+    border-radius: 15px;
 }
+
+.tagData{
+    margin-left: 3px;
+    float: left;
+    color: white;
+}
+
+
+.tagPic{
+    margin-left: 8px;
+    margin-right: 3px;
+    float : right;
+    cursor: pointer;
+}
+
+.tagPic:hover{
+    background: url(../img/whitetrash.png);
+}
+
+ .tagData2{
+    float: left;
+    margin-bottom: 10px;
+} 
+
+ .tagValue{
+    margin-left: 10px;
+    float : right;
+    margin-bottom: 10px;
+} 
