@@ -19,7 +19,6 @@ const ListTags = () => {
                         <option className="tagData" key={localState.data}> {localState.data} </option>
                         <img src = {trashicon} className="tagPic" name = {localState.data} onClick={removeTag} width = "20vw" height ="20vh" />
                      </p>
-
                 </div>
             )) }
         </div>

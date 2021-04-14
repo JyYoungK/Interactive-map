@@ -11,12 +11,7 @@ const AuthProvider = (props) => {
     const [coloredMap, setColoredMap] = useState([]);
     const [inputTag, setInputTag] = useState([]);
     const [inputTagData, setInputTagData] = useState([]);
-    const [tag1, settag1] = useState([]);
-    const [tag2, settag2] = useState([]);
-    const [tag3, settag3] = useState([]);
-    const [tag1value, settag1value] = useState([]);
-    const [tag2value, settag2value] = useState([]);
-    const [tag3value, settag3value] = useState([]);
+    const [inputTagValue, setInputTagValue] = useState([]);
     const [changeColor, setChangeColor] = useState("#ffff00");
     const [countryColor, setCountryColor] = useState("");
     const [countryEvent, setCountryEvent] = useState([]);
@@ -34,12 +29,7 @@ const AuthProvider = (props) => {
         countryEvent, setCountryEvent,
         inputTag, setInputTag, 
         inputTagData, setInputTagData,
-        tag1, settag1,
-        tag2, settag2,
-        tag3, settag3,
-        tag1value, settag1value,
-        tag2value, settag2value,
-        tag3value, settag3value,
+        inputTagValue, setInputTagValue,
         myImage, setMyImage
   };
   return <AuthContext.Provider value= {authContextValue} {...props}/>

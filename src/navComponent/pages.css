@@ -151,7 +151,7 @@ input[type=number] {
   height: 40px;
 }
 
-@media screen and (max-width: 560px) {
+/* @media screen and (max-width: 560px) {
   .NavbarItems {
     position: relative;
   }
@@ -210,4 +210,4 @@ input[type=number] {
     font-size: 2rem;
   }
 
-}
+} */

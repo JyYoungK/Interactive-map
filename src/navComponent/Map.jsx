@@ -1,7 +1,5 @@
 import React, { useState, useEffect, Component } from 'react';
 import { MapContainer, GeoJSON,} from "react-leaflet";
-// import {Icon} from 'react-native-elements';
-// import TagInput from 'react-native-tags-input';
 import "leaflet/dist/leaflet.css";
 import "./MyMap.css";
 import './pages.css';
@@ -14,9 +12,8 @@ import {faTrash} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faTrash);
 
-
 const Map = () => {
-  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText,countryEvent, inputTag, setInputTag, inputTagData, setInputTagData, tag1, settag1, tag2, settag2, tag3, settag3, tag1value, settag1value, tag2value, settag2value, tag3value, settag3value, setCountryEvent, myImage } = useGlobalState();
+  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText, countryEvent, inputTag, setInputTag, inputTagData, setInputTagData, inputTagValue, setInputTagValue, setCountryEvent, myImage, setMyImage } = useGlobalState();
   const [countryModalIsOpen, setCountryModalIsOpen] = useState(false);
   const modalStyle = {
     overlay: {
@@ -52,24 +49,29 @@ const Map = () => {
   }
 
   const onEachCountry = (country, layer) => {
-    layer.options.fillColor = country.properties.color;
-    const countryName = country.properties.ADMIN;
-    const countryText = country.properties.countryText;
-    layer.bindPopup(countryName + " " + countryText);
-    // layer.options.fillOpacity = 0.2; // number can go from 0-9
-    // If you want to make countries have different colors use below-------------------------
-    // const colorIndex = Math.floor(Math.random() * this.color.length);
-    // layer.options.fillColor = this.color[colorIndex]; // number can go from 0-9
-    layer.on({ //Clickable function
-          click: setEvent
-    })
-    layer.on('mouseover', function() { layer.openPopup(); }); //Show country names
-    layer.on('mouseout', function() { layer.closePopup(); });
+      layer.options.fillColor = country.properties.color;
+      const countryName = country.properties.ADMIN;
+      const countryText = country.properties.countryText;
+      layer.bindPopup(countryName + " " + countryText);
+      // layer.options.fillOpacity = 0.2; // number can go from 0-9
+      // If you want to make countries have different colors use below-------------------------
+      // const colorIndex = Math.floor(Math.random() * this.color.length);
+      // layer.options.fillColor = this.color[colorIndex]; // number can go from 0-9
+      layer.on({ //Clickable function
+            click: setEvent
+      })
+      layer.on('mouseover', function() { layer.openPopup(); }); //Show country names
+      layer.on('mouseout', function() { layer.closePopup(); });
   }
 
   const setEvent = (event)=> { 
-    setCountryModalIsOpen(true);
-    setCountryEvent(event)  
+
+    // inputTagData.map((localState) =>(
+    //   console.log("show me smth " + localState.data)
+    // ))
+
+      setCountryEvent(event);
+      setCountryModalIsOpen(true);
   } ;
 
   function storeCountryData () {
@@ -79,8 +81,10 @@ const Map = () => {
     // setCountryData([... countryData , { //Adds new ISO countryData
     //   ISO: countryEvent.target.feature.properties.ISO_A3,
     // }]);   
-    
-    setCountryData((prevCountryData) => {
+    // console.log("Successfully loaded " + myImage.name)
+    console.log(inputTagValue.length + " length value")
+    if (inputTagData.length === 1){
+      setCountryData((prevCountryData) => {
       return prevCountryData
         .filter(
           //Removes the countryData with matching ISO
@@ -90,18 +94,71 @@ const Map = () => {
           //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
           ISO: countryEvent.target.feature.properties.ISO_A3,
           color: changeColor,
-          tag1name: tag1,
-          tag2name: tag2,
-          tag3name: tag3,
-          tag1value: tag1value,
-          tag2value: tag2value,
-          tag3value: tag3value,
           id : countryEvent.target.feature.properties.ADMIN,
           arrayIndex : countryEvent.target.feature.properties.arrayIndex,
-          countryText : countryText,   
-          // image : myImage,     
+          countryText : countryText,
+          tagLength: 1,
+          tag1name: inputTagValue[0].tagName,
+          tag1value: inputTagValue[0].data,  
+          tag2name: inputTagValue[0].tagName,
+          tag2value: inputTagValue[0].data,  
+          tag3name: inputTagValue[0].tagName,
+          tag3value: inputTagValue[0].data,  
+          image : myImage,     
         });
-    });
+      });
+    }
+    if (inputTagData.length === 2){
+      setCountryData((prevCountryData) => {
+      return prevCountryData
+        .filter(
+          //Removes the countryData with matching ISO
+          (item) => item.ISO !== countryEvent.target.feature.properties.ISO_A3
+        )
+        .concat({
+          //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
+          ISO: countryEvent.target.feature.properties.ISO_A3,
+          color: changeColor,
+          id : countryEvent.target.feature.properties.ADMIN,
+          arrayIndex : countryEvent.target.feature.properties.arrayIndex,
+          countryText : countryText,
+          tagLength: 2,
+          tag1name: inputTagValue[0].tagName,
+          tag1value: inputTagValue[0].data,  
+          tag2name: inputTagValue[1].tagName,
+          tag2value: inputTagValue[1].data,  
+          tag3name: inputTagValue[1].tagName,
+          tag3value: inputTagValue[1].data,  
+          image : myImage,     
+        });
+      });
+    }   
+    if (inputTagData.length === 3){
+        setCountryData((prevCountryData) => {
+          console.log(inputTagValue)
+        return prevCountryData
+          .filter(
+            //Removes the countryData with matching ISO
+            (item) => item.ISO !== countryEvent.target.feature.properties.ISO_A3
+          )
+          .concat({
+              //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
+              ISO: countryEvent.target.feature.properties.ISO_A3,
+              color: changeColor,
+              id : countryEvent.target.feature.properties.ADMIN,
+              arrayIndex : countryEvent.target.feature.properties.arrayIndex,
+              countryText : countryText,
+              tagLength: 3,
+              tag1name: inputTagValue[0].tagName,
+              tag1value: inputTagValue[0].data,  
+              tag2name: inputTagValue[1].tagName,
+              tag2value: inputTagValue[1].data,  
+              tag3name: inputTagValue[2].tagName,
+              tag3value: inputTagValue[2].data,  
+              image : myImage,     
+            });
+        });
+    }
 
     const countries = [];
     for (let i = 0; i < features.length; i++) {
@@ -147,20 +204,33 @@ const Map = () => {
   }
 
   function saveCountryData () {
-    storeCountryData();
-    setCountryModalIsOpen(false);
+    
+      if (inputTagValue.length !== inputTagData.length){
+        alert("Please fill all the values!")
+      }
+      else{
+        storeCountryData();
+        setCountryModalIsOpen(false);
+        setInputTagValue([]);//Reset so it doesn't add up        
+      }
   }
 
   function removeCountryData () {
     eraseCountryData();
     setCountryModalIsOpen(false);
+    setInputTagValue([]);//Reset so it doesn't add up
   }
+
+  function closeComparison(){
+    setCountryModalIsOpen(false)
+    setInputTagValue([]);//Reset so it doesn't add up
+}
 
   function addTag(e){
     e.preventDefault();
     if (!(inputTagData.filter(tagData => tagData.data === inputTag).length > 0)){ //Checks if its not duplicate
       if (inputTagData.length < 3){
-        setInputTagData([... inputTagData , {
+        setInputTagData([... inputTagData, {
           data: inputTag,
         }]);  
       }
@@ -176,8 +246,14 @@ const Map = () => {
   const toInputUppercase = e => {
     e.target.value = ("" + e.target.value).toUpperCase();
   }
- 
 
+  function tagHandler(tag, value) {
+    setInputTagValue([... inputTagValue, {
+      tagName: tag,
+      data: value,
+    }]);  
+  }
+ 
   return (
     <div>
           <form className="tag-area">
@@ -189,26 +265,26 @@ const Map = () => {
           <h1 style ={{textAlign: "center"}}> {myMapTitle} </h1>
           <MapContainer style = {{height: "80vh", zIndex : 1}} doubleClickZoom={false} zoom = {2} minZoom = {2} center = {[50, 13]}>{/* Displays the zoom button*/}
               {/* Displays the map */}
-              <GeoJSON key={JSON.stringify(coloredMap, countryText)} style = {countryStyle} onEachFeature={onEachCountry} data = {coloredMap} /> 
+              <GeoJSON key={JSON.stringify(coloredMap, countryText)} style = {countryStyle} onEachFeature = {onEachCountry} data = {coloredMap} /> 
           </MapContainer>
           <Modal isOpen={countryModalIsOpen} //Modal open depends on setModal
                         ariaHideApp={false} //Hides annoying error
-                        onRequestClose={() => setCountryModalIsOpen(false)} //Closes the modal if clicked outside of modal or esc
+                        onRequestClose={() => closeComparison} //Closes the modal if clicked outside of modal or esc
                         style={ modalStyle }
                         >
                             <div className="saveContents">
                                 <h2>Add information to the map </h2>
                                 <br></br>
                                 <div> Select a color to this country <input type = "color" value = {changeColor} onChange={e => setChangeColor(e.target.value)}/>  </div>
-                                {/* <br></br>
-                                {" Upload an image "} 
-                                <input type="file" /> */}
+                                <br></br>
+                                <input type="file" onChange={e => setMyImage(e.target.files[0])}/>
                                 <br></br>
                                 <div>
                                     { inputTagData.map((localState) =>(
                                         <div>
                                             <div className="tagData2"> {localState.data} </div>
-                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={event => settag1(event.target.value) }/> </div>
+                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value)}/> </div>
+                                            {/* <div> {} </div> */}
                                         </div>
                                     )) }
                                 </div>
@@ -216,7 +292,7 @@ const Map = () => {
                                 <div className="saveButtons">
                                     <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
                                     <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
-                                    <button className="saveButtons" onClick = {() => setCountryModalIsOpen(false)}> Close </button>
+                                    <button className="saveButtons" onClick = {closeComparison}> Close </button>
                                 </div>
                             </div>
           </Modal>

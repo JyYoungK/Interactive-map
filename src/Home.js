@@ -106,10 +106,10 @@ const Home = (props) => {
             listofcountries.push(countryData[countryData.length-1].id)
 
             //Columns
-            columns.push({field: 'id', headerName: 'COUNTRY', width: 140})
-            columns.push({field: 'tag1value', headerName: countryData[0].tag1name, width: 140})
-            columns.push({field: 'tag2value', headerName: countryData[0].tag2name, width: 140})
-            columns.push({field: 'tag3value', headerName: countryData[0].tag3name, width: 140})
+            columns.push({field: 'id', headerName: 'COUNTRY', width: 150})
+            columns.push({field: 'tag1value', headerName: countryData[0].tag1name, width: 160})
+            columns.push({field: 'tag2value', headerName: countryData[0].tag2name, width: 160})
+            columns.push({field: 'tag3value', headerName: countryData[0].tag3name, width: 160})
 
             setCompareModalIsOpen(true);
             //setlistofcountries([]); //Resets so that it doesn't add up.

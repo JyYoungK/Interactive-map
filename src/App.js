@@ -9,7 +9,7 @@ import { features } from "./data/countries.json";
 import {storage} from './config/fire';
 
 export default function App (){
-  const { user, setUser, mapTitle, setMapTitle, countryData, setColoredMap, setCountryData} = useGlobalState();
+  const { user, setUser, mapTitle, setMapTitle, countryData, setColoredMap, setCountryData, inputTagData, setInputTagData,} = useGlobalState();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -77,7 +77,7 @@ export default function App (){
     userExists.once("value")
     .then(function(userinDB){
         for (var i = 0; i < (countryData.length); i++) {
-          // storage.ref("users/User:" + user.uid + "/" + mapTitle + "/Images" + i).put(countryData[i].image);
+          storage.ref("users/User:" + user.uid + "/" + mapTitle + "/" + countryData[i].ISO).put(countryData[i].image);
 
           if (userinDB.exists()){ //if a map exists under a username 
             //1. Choose to update (Change here if you add more data)--------------------------------------------------------
@@ -86,11 +86,12 @@ export default function App (){
               CountryColor: countryData[i].color,
               ArrayIndex : countryData[i].arrayIndex,
               CountryText : countryData[i].countryText,
+              TagLength: countryData[i].tagLength,
               Tag1Name: countryData[i].tag1name,
-              Tag2Name: countryData[i].tag2name,
-              Tag3Name: countryData[i].tag3name,
               Tag1Value: countryData[i].tag1value,
+              Tag2Name: countryData[i].tag2name,
               Tag2Value: countryData[i].tag2value,
+              Tag3Name: countryData[i].tag3name,
               Tag3Value: countryData[i].tag3value,
               Name: countryData[i].id,
             });
@@ -101,11 +102,12 @@ export default function App (){
               CountryColor: countryData[i].color,
               ArrayIndex : countryData[i].arrayIndex,
               CountryText : countryData[i].countryText,
+              TagLength: countryData[i].tagLength,
               Tag1Name: countryData[i].tag1name,
-              Tag2Name: countryData[i].tag2name,
-              Tag3Name: countryData[i].tag3name,
               Tag1Value: countryData[i].tag1value,
+              Tag2Name: countryData[i].tag2name,
               Tag2Value: countryData[i].tag2value,
+              Tag3Name: countryData[i].tag3name,
               Tag3Value: countryData[i].tag3value,
               Name: countryData[i].id,
             });
@@ -152,12 +154,17 @@ export default function App (){
     Dataref.on("value", function(objData) {
 
        let cData = [];
+       let tagLength, tag1v, tag2v, tag3v;
        console.log("Loading a selected map called " + mapTitle[e] + "...");
        objData.forEach(child =>{ //this but older style.
          cData.push(child.val());
+         tagLength = child.val().TagLength;  
+         tag1v = child.val().Tag1Name;
+         tag2v = child.val().Tag2Name;
+         tag3v = child.val().Tag3Name;
 
          setCountryData((prevCountryData) => { //(Change here if you add more data)--------------------------------------------------------
-            return prevCountryData
+          return prevCountryData
               .concat({
                 arrayIndex : child.val().ArrayIndex,
                 color: child.val().CountryColor,
@@ -174,8 +181,8 @@ export default function App (){
          });
 
          console.log(child.val().Name + " has following properties. " + "Array Index: " + child.val().ArrayIndex + ", ISO: " + child.val().CountryISO + ", Color: " + child.val().CountryColor + ", Text: " + child.val().CountryText);     
-   
-         for (let i = 0; i < features.length; i++) {
+
+         for (let i = 0; i < features.length; i++) { //
             const country = features[i];
             country.properties.color = "green";
     
@@ -187,6 +194,43 @@ export default function App (){
             }
             countries.push(country)
          }
+        // Importing Tag
+         if (tagLength === 1){
+          setInputTagData([... inputTagData, {
+            data: tag1v,
+          }]); 
+         }
+
+         if (tagLength === 2){
+          setInputTagData([... inputTagData, {
+            data: tag1v,
+          }]); 
+          setInputTagData((prevCountryData) => { 
+            return prevCountryData
+                .concat({
+                  data : tag2v, 
+                });
+           });
+         }
+
+         if (tagLength === 3){
+          setInputTagData([... inputTagData, {
+            data: tag1v,
+          }]); 
+          setInputTagData((prevCountryData) => { 
+            return prevCountryData
+                .concat({
+                  data : tag3v, 
+                });
+           });
+           setInputTagData((prevCountryData) => { 
+            return prevCountryData
+                .concat({
+                  data : tag3v, 
+                });
+           });
+         }
+
          setColoredMap(countries);  
        });
     });
