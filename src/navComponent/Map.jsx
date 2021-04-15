@@ -13,8 +13,13 @@ import {faTrash} from '@fortawesome/free-solid-svg-icons';
 library.add(faTrash);
 
 const Map = () => {
-  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText, countryEvent, inputTag, setInputTag, inputTagData, setInputTagData, inputTagValue, setInputTagValue, setCountryEvent, myImage, setMyImage } = useGlobalState();
+  const { myMapTitle, setCountryData, changeColor, setChangeColor, coloredMap, setColoredMap, countryText, setCountryText, inputTag, setInputTag, inputTagData, setInputTagData, inputTagValue, setInputTagValue, countryEvent, setCountryEvent, myImage, setMyImage } = useGlobalState();
   const [countryModalIsOpen, setCountryModalIsOpen] = useState(false);
+  const [countryModal2IsOpen, setCountryModal2IsOpen] = useState(false);
+  const [countryTagValues, setCountryTagValues] = useState([]);
+  const [countryName, setCountryName] = useState("");
+
+
   const modalStyle = {
     overlay: {
         zIndex: 10,
@@ -69,10 +74,35 @@ const Map = () => {
     // inputTagData.map((localState) =>(
     //   console.log("show me smth " + localState.data)
     // ))
-
-      setCountryEvent(event);
-      setCountryModalIsOpen(true);
+      console.log("Selected country: " + event.target.feature.properties.ADMIN)
+      // console.log(event.target.feature.properties.ADMIN)
+      setCountryName(event.target.feature.properties.ADMIN)
+      setCountryEvent(event);     
+      if (event.target.feature.properties.tagLength > 0){
+        console.log("Opening a modal with data")
+        setCountryModal2IsOpen(true);
+        countryValues(event);
+      } 
+      else {
+        console.log("Opening a fresh modal")
+        setCountryModalIsOpen(true);
+      }     
   } ;
+
+  function countryValues(event){
+    console.log("Showing all the available values for " + event.target.feature.properties.ADMIN);
+    console.log("Showing value of " + event.target.feature.properties.tag1value);
+    console.log("Length " + event.target.feature.properties.tagLength);
+    for (var i = 0; i < event.target.feature.properties.tagLength; i++) {
+      setCountryTagValues(event.target.feature.properties.tag1value)
+    }
+    // if (event.target.feature.properties.tagLength === 1) {
+    //   countryTagValues.push(
+    //     <span key={1}>
+    //     {event.target.feature.properties.tag1value}
+    //     </span>
+    //   )}
+  }
 
   function storeCountryData () {
     // Old version
@@ -82,8 +112,36 @@ const Map = () => {
     //   ISO: countryEvent.target.feature.properties.ISO_A3,
     // }]);   
     // console.log("Successfully loaded " + myImage.name)
-    console.log(inputTagValue.length + " length value")
+    // console.log(inputTagValue.length + " length value")
+    const countries = [];
+    for (let i = 0; i < features.length; i++) {
+      const country = features[i];
+      if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
+        // country.properties.countryText = " : " + countryText;\        
+        country.properties.countryText = " : Data Available";
+        country.properties.color = changeColor;
+        country.properties.tagLength = inputTagData.length
+      }
+      countries.push(country)
+    }
+    setColoredMap(countries);
+
     if (inputTagData.length === 1){
+      const countries = [];
+      for (let i = 0; i < features.length; i++) {
+        const country = features[i];
+        if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
+          // country.properties.countryText = " : " + countryText;\        
+          country.properties.countryText = " : Data Available";
+          country.properties.color = changeColor;
+          country.properties.tagLength = 1;
+          country.properties.tag1name = inputTagValue[0].tagName;
+          country.properties.tag1value = inputTagValue[0].data;
+        }
+        countries.push(country)
+      }
+      setColoredMap(countries);
+
       setCountryData((prevCountryData) => {
       return prevCountryData
         .filter(
@@ -109,6 +167,23 @@ const Map = () => {
       });
     }
     if (inputTagData.length === 2){
+      const countries = [];
+      for (let i = 0; i < features.length; i++) {
+        const country = features[i];
+        if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
+          // country.properties.countryText = " : " + countryText;\        
+          country.properties.countryText = " : Data Available";
+          country.properties.color = changeColor;
+          country.properties.tagLength = 2;
+          country.properties.tag1name = inputTagValue[0].tagName;
+          country.properties.tag1value = inputTagValue[0].data;        
+          country.properties.tag2name = inputTagValue[1].tagName;
+          country.properties.tag2value = inputTagValue[1].data;   
+        }
+        countries.push(country)
+      }
+      setColoredMap(countries);
+
       setCountryData((prevCountryData) => {
       return prevCountryData
         .filter(
@@ -134,43 +209,50 @@ const Map = () => {
       });
     }   
     if (inputTagData.length === 3){
-        setCountryData((prevCountryData) => {
-          console.log(inputTagValue)
-        return prevCountryData
-          .filter(
-            //Removes the countryData with matching ISO
-            (item) => item.ISO !== countryEvent.target.feature.properties.ISO_A3
-          )
-          .concat({
-              //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
-              ISO: countryEvent.target.feature.properties.ISO_A3,
-              color: changeColor,
-              id : countryEvent.target.feature.properties.ADMIN,
-              arrayIndex : countryEvent.target.feature.properties.arrayIndex,
-              countryText : countryText,
-              tagLength: 3,
-              tag1name: inputTagValue[0].tagName,
-              tag1value: inputTagValue[0].data,  
-              tag2name: inputTagValue[1].tagName,
-              tag2value: inputTagValue[1].data,  
-              tag3name: inputTagValue[2].tagName,
-              tag3value: inputTagValue[2].data,  
-              image : myImage,     
-            });
-        });
-    }
-
-    const countries = [];
-    for (let i = 0; i < features.length; i++) {
-      const country = features[i];
-      if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
-        // country.properties.countryText = " : " + countryText;\        
-        country.properties.countryText = " : Data Available";
-        country.properties.color = changeColor;
+      const countries = [];
+      for (let i = 0; i < features.length; i++) {
+        const country = features[i];
+        if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
+          // country.properties.countryText = " : " + countryText;\        
+          country.properties.countryText = " : Data Available";
+          country.properties.color = changeColor;
+          country.properties.tagLength = 3;
+          country.properties.tag1name = inputTagValue[0].tagName;
+          country.properties.tag1value = inputTagValue[0].data;        
+          country.properties.tag2name = inputTagValue[1].tagName;
+          country.properties.tag2value = inputTagValue[1].data;   
+          country.properties.tag3name = inputTagValue[2].tagName;
+          country.properties.tag3value = inputTagValue[2].data;   
+        }        
+        countries.push(country)
       }
-      countries.push(country)
+      setColoredMap(countries);
+
+      setCountryData((prevCountryData) => {
+        console.log(inputTagValue)
+      return prevCountryData
+        .filter(
+          //Removes the countryData with matching ISO
+          (item) => item.ISO !== countryEvent.target.feature.properties.ISO_A3
+        )
+        .concat({
+            //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
+            ISO: countryEvent.target.feature.properties.ISO_A3,
+            color: changeColor,
+            id : countryEvent.target.feature.properties.ADMIN,
+            arrayIndex : countryEvent.target.feature.properties.arrayIndex,
+            countryText : countryText,
+            tagLength: 3,
+            tag1name: inputTagValue[0].tagName,
+            tag1value: inputTagValue[0].data,  
+            tag2name: inputTagValue[1].tagName,
+            tag2value: inputTagValue[1].data,  
+            tag3name: inputTagValue[2].tagName,
+            tag3value: inputTagValue[2].data,  
+            image : myImage,     
+          });
+      });
     }
-    setColoredMap(countries);
   }
 
   function eraseCountryData () {
@@ -197,6 +279,7 @@ const Map = () => {
       if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
         country.properties.color = "green";
         country.properties.countryText = ": No data available";
+        country.properties.tagLength = 0;
       }
       countries.push(country)
     }
@@ -205,26 +288,31 @@ const Map = () => {
 
   function saveCountryData () {
     
-      if (inputTagValue.length !== inputTagData.length){
-        alert("Please fill all the values!")
-      }
-      else{
+      // if (inputTagValue.length !== inputTagData.length){
+      //   alert("Please fill all the values!")
+      // }
+      // else{
         storeCountryData();
         setCountryModalIsOpen(false);
-        setInputTagValue([]);//Reset so it doesn't add up        
-      }
+        setInputTagValue([]);//Reset so it doesn't add up     
+        setCountryTagValues([]);//Reset so it doesn't add up
+      // }
   }
 
   function removeCountryData () {
     eraseCountryData();
     setCountryModalIsOpen(false);
+    setCountryModal2IsOpen(false);
     setInputTagValue([]);//Reset so it doesn't add up
+    setCountryTagValues([]);//Reset so it doesn't add up
   }
 
   function closeComparison(){
     setCountryModalIsOpen(false)
+    setCountryModal2IsOpen(false)
     setInputTagValue([]);//Reset so it doesn't add up
-}
+    setCountryTagValues([]);//Reset so it doesn't add up
+  }
 
   function addTag(e){
     e.preventDefault();
@@ -253,6 +341,7 @@ const Map = () => {
       data: value,
     }]);  
   }
+
  
   return (
     <div>
@@ -267,13 +356,14 @@ const Map = () => {
               {/* Displays the map */}
               <GeoJSON key={JSON.stringify(coloredMap, countryText)} style = {countryStyle} onEachFeature = {onEachCountry} data = {coloredMap} /> 
           </MapContainer>
+          {/**************************************************************************** 1st Modal ****************************************************************************/}
           <Modal isOpen={countryModalIsOpen} //Modal open depends on setModal
                         ariaHideApp={false} //Hides annoying error
                         onRequestClose={() => closeComparison} //Closes the modal if clicked outside of modal or esc
                         style={ modalStyle }
                         >
                             <div className="saveContents">
-                                <h2>Add information to the map </h2>
+                                <h2>Add information to {countryName} </h2>
                                 <br></br>
                                 <div> Select a color to this country <input type = "color" value = {changeColor} onChange={e => setChangeColor(e.target.value)}/>  </div>
                                 <br></br>
@@ -296,6 +386,41 @@ const Map = () => {
                                 </div>
                             </div>
           </Modal>
+          {/**************************************************************************** 1st Modal ****************************************************************************/}
+
+          {/**************************************************************************** 2nd Modal ****************************************************************************/}
+          <Modal isOpen={countryModal2IsOpen} //Modal open depends on setModal
+                        ariaHideApp={false} //Hides annoying error
+                        onRequestClose={() => closeComparison} //Closes the modal if clicked outside of modal or esc
+                        style={ modalStyle }
+                        >
+                            <div className="saveContents">
+                                <h2>Change information to the map </h2>
+                                <br></br>
+                                <div> Select a color to this country <input type = "color" value = {changeColor} onChange={e => setChangeColor(e.target.value)}/>  </div>
+                                <br></br>
+                                <input type="file" onChange={e => setMyImage(e.target.files[0])}/>
+                                <br></br>
+
+                                <div>
+                                    { inputTagData.map((localState) =>(
+                                        <div>
+                                            <div className="tagData2"> {localState.data} </div>
+                                            <div> {countryTagValues} </div>
+                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value)}/> </div>
+                                            {/* <div> {} </div> */}
+                                        </div>
+                                    )) }
+                                </div>
+  
+                                <div className="saveButtons">
+                                    <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
+                                    <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
+                                    <button className="saveButtons" onClick = {closeComparison}> Close </button>
+                                </div>
+                            </div>
+          </Modal>
+          {/**************************************************************************** 2nd Modal ****************************************************************************/}
     </div> 
   );
 }
