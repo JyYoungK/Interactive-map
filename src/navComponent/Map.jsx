@@ -75,6 +75,8 @@ const Map = () => {
     //   console.log("show me smth " + localState.data)
     // ))
       console.log("Selected country: " + event.target.feature.properties.ADMIN)
+      console.log("country tag values: ")
+
       // console.log(event.target.feature.properties.ADMIN)
       setCountryName(event.target.feature.properties.ADMIN)
       setCountryEvent(event);     
@@ -90,18 +92,18 @@ const Map = () => {
   } ;
 
   function countryValues(event){
-    console.log("Showing all the available values for " + event.target.feature.properties.ADMIN);
-    console.log("Showing value of " + event.target.feature.properties.tag1value);
-    console.log("Length " + event.target.feature.properties.tagLength);
-    for (var i = 0; i < event.target.feature.properties.tagLength; i++) {
+    if (event.target.feature.properties.tagLength === 1){
       setCountryTagValues(event.target.feature.properties.tag1value)
     }
-    // if (event.target.feature.properties.tagLength === 1) {
-    //   countryTagValues.push(
-    //     <span key={1}>
-    //     {event.target.feature.properties.tag1value}
-    //     </span>
-    //   )}
+    else if (event.target.feature.properties.tagLength === 2){
+      setCountryTagValues(event.target.feature.properties.tag1value)
+      setCountryTagValues(old => [...old, event.target.feature.properties.tag2value])
+    }
+    else if (event.target.feature.properties.tagLength === 3){
+      setCountryTagValues(event.target.feature.properties.tag1value)
+      setCountryTagValues(old => [...old, event.target.feature.properties.tag2value])
+      setCountryTagValues(old => [...old, event.target.feature.properties.tag3value])
+    }
   }
 
   function storeCountryData () {
@@ -229,7 +231,6 @@ const Map = () => {
       setColoredMap(countries);
 
       setCountryData((prevCountryData) => {
-        console.log(inputTagValue)
       return prevCountryData
         .filter(
           //Removes the countryData with matching ISO
@@ -320,6 +321,7 @@ const Map = () => {
       if (inputTagData.length < 3){
         setInputTagData([... inputTagData, {
           data: inputTag,
+          length: inputTagData.length
         }]);  
       }
       else{
@@ -406,8 +408,7 @@ const Map = () => {
                                     { inputTagData.map((localState) =>(
                                         <div>
                                             <div className="tagData2"> {localState.data} </div>
-                                            <div> {countryTagValues} </div>
-                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value)}/> </div>
+                                            <div className="tagValue"> : <input type="text" placeholder = {countryTagValues[localState.length]} style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value)}/> </div>
                                             {/* <div> {} </div> */}
                                         </div>
                                     )) }
