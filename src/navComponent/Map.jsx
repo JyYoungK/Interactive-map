@@ -18,6 +18,8 @@ const Map = () => {
   const [countryModal2IsOpen, setCountryModal2IsOpen] = useState(false);
   const [countryTagValues, setCountryTagValues] = useState([]);
   const [countryName, setCountryName] = useState("");
+  const [preview, setPreview] = useState()
+  const [Samplestate, setSampleState] = useState([])
 
 
   const modalStyle = {
@@ -77,7 +79,9 @@ const Map = () => {
       console.log("Selected country: " + event.target.feature.properties.ADMIN)
       console.log("country tag values: ")
 
-      // console.log(event.target.feature.properties.ADMIN)
+      console.log(event.target.feature.properties)
+      console.log(preview)
+
       setCountryName(event.target.feature.properties.ADMIN)
       setCountryEvent(event);     
       if (event.target.feature.properties.tagLength > 0){
@@ -93,16 +97,13 @@ const Map = () => {
 
   function countryValues(event){
     if (event.target.feature.properties.tagLength === 1){
-      setCountryTagValues(event.target.feature.properties.tag1value)
+      setCountryTagValues([event.target.feature.properties.tag1value])
     }
     else if (event.target.feature.properties.tagLength === 2){
-      setCountryTagValues(event.target.feature.properties.tag1value)
-      setCountryTagValues(old => [...old, event.target.feature.properties.tag2value])
+      setCountryTagValues([event.target.feature.properties.tag1value, event.target.feature.properties.tag2value])
     }
     else if (event.target.feature.properties.tagLength === 3){
-      setCountryTagValues(event.target.feature.properties.tag1value)
-      setCountryTagValues(old => [...old, event.target.feature.properties.tag2value])
-      setCountryTagValues(old => [...old, event.target.feature.properties.tag3value])
+      setCountryTagValues([event.target.feature.properties.tag1value, event.target.feature.properties.tag2value, event.target.feature.properties.tag3value])
     }
   }
 
@@ -115,18 +116,51 @@ const Map = () => {
     // }]);   
     // console.log("Successfully loaded " + myImage.name)
     // console.log(inputTagValue.length + " length value")
-    const countries = [];
-    for (let i = 0; i < features.length; i++) {
-      const country = features[i];
-      if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
-        // country.properties.countryText = " : " + countryText;\        
-        country.properties.countryText = " : Data Available";
-        country.properties.color = changeColor;
-        country.properties.tagLength = inputTagData.length
+    // const countries = [];
+    // for (let i = 0; i < features.length; i++) {
+    //   const country = features[i];
+    //   if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
+    //     // country.properties.countryText = " : " + countryText;\        
+    //     country.properties.countryText = " : Data Available";
+    //     country.properties.color = changeColor;
+    //     country.properties.tagLength = inputTagData.length
+    //   }
+    //   countries.push(country)
+    // }
+    // setColoredMap(countries);
+    if (inputTagData.length === 0){
+      const countries = [];
+      for (let i = 0; i < features.length; i++) {
+        const country = features[i];
+        if (country.properties.ISO_A3 === countryEvent.target.feature.properties.ISO_A3){
+          // country.properties.countryText = " : " + countryText;\        
+          country.properties.countryText = " : Data Available";
+          country.properties.color = changeColor;
+          country.properties.tagLength = 0;
+          country.properties.image = myImage;
+        }
+        countries.push(country)
       }
-      countries.push(country)
+      setColoredMap(countries);
+
+      setCountryData((prevCountryData) => {
+        return prevCountryData
+          .filter(
+            //Removes the countryData with matching ISO
+            (item) => item.ISO !== countryEvent.target.feature.properties.ISO_A3
+          )
+          .concat({
+            //Adds new ISO countryData //(Change here if you add more data)--------------------------------------------------------
+            ISO: countryEvent.target.feature.properties.ISO_A3,
+            color: changeColor,
+            id : countryEvent.target.feature.properties.ADMIN,
+            arrayIndex : countryEvent.target.feature.properties.arrayIndex,
+            countryText : countryText,
+            tagLength: 0,
+            image : myImage, 
+          });
+        });
     }
-    setColoredMap(countries);
 
     if (inputTagData.length === 1){
       const countries = [];
@@ -137,6 +171,7 @@ const Map = () => {
           country.properties.countryText = " : Data Available";
           country.properties.color = changeColor;
           country.properties.tagLength = 1;
+          country.properties.image = myImage;
           country.properties.tag1name = inputTagValue[0].tagName;
           country.properties.tag1value = inputTagValue[0].data;
         }
@@ -164,7 +199,7 @@ const Map = () => {
           tag2value: inputTagValue[0].data,  
           tag3name: inputTagValue[0].tagName,
           tag3value: inputTagValue[0].data,  
-          image : myImage,     
+          image : myImage,   
         });
       });
     }
@@ -177,6 +212,7 @@ const Map = () => {
           country.properties.countryText = " : Data Available";
           country.properties.color = changeColor;
           country.properties.tagLength = 2;
+          country.properties.image = myImage;
           country.properties.tag1name = inputTagValue[0].tagName;
           country.properties.tag1value = inputTagValue[0].data;        
           country.properties.tag2name = inputTagValue[1].tagName;
@@ -206,7 +242,7 @@ const Map = () => {
           tag2value: inputTagValue[1].data,  
           tag3name: inputTagValue[1].tagName,
           tag3value: inputTagValue[1].data,  
-          image : myImage,     
+          image : myImage,  
         });
       });
     }   
@@ -219,6 +255,7 @@ const Map = () => {
           country.properties.countryText = " : Data Available";
           country.properties.color = changeColor;
           country.properties.tagLength = 3;
+          country.properties.image = myImage;
           country.properties.tag1name = inputTagValue[0].tagName;
           country.properties.tag1value = inputTagValue[0].data;        
           country.properties.tag2name = inputTagValue[1].tagName;
@@ -250,7 +287,7 @@ const Map = () => {
             tag2value: inputTagValue[1].data,  
             tag3name: inputTagValue[2].tagName,
             tag3value: inputTagValue[2].data,  
-            image : myImage,     
+            image : myImage,    
           });
       });
     }
@@ -344,6 +381,25 @@ const Map = () => {
     }]);  
   }
 
+  //File Image Display
+  useEffect(() => {
+    if (!myImage) {
+        setPreview(undefined)
+        return
+    }
+
+    const objectUrl = URL.createObjectURL(myImage)
+    setPreview(objectUrl)
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl)
+}, [myImage])
+
+  const onSelectFile = e => {
+
+    setMyImage(e.target.files[0])
+  }
+
  
   return (
     <div>
@@ -369,23 +425,29 @@ const Map = () => {
                                 <br></br>
                                 <div> Select a color to this country <input type = "color" value = {changeColor} onChange={e => setChangeColor(e.target.value)}/>  </div>
                                 <br></br>
-                                <input type="file" onChange={e => setMyImage(e.target.files[0])}/>
-                                <br></br>
+                                {/* <input type="file" onChange={e => setMyImage(e.target.files[0])} accept="image/x-png,image/gif,image/jpeg"/> */}
                                 <div>
-                                    { inputTagData.map((localState) =>(
-                                        <div>
-                                            <div className="tagData2"> {localState.data} </div>
-                                            <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value)}/> </div>
-                                            {/* <div> {} </div> */}
-                                        </div>
-                                    )) }
+                                    <input type='file' onChange={onSelectFile} accept="image/x-png,image/gif,image/jpeg"/>
+                                    <br></br>
+                                    {myImage &&  <img src={preview} height = "250" width = "320" /> }
                                 </div>
-  
-                                <div className="saveButtons">
-                                    <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
-                                    <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
-                                    <button className="saveButtons" onClick = {closeComparison}> Close </button>
-                                </div>
+                                <br></br>
+                                <form onSubmit = {saveCountryData}>
+                                  <div>
+                                      { inputTagData.map((localState) =>(
+                                          <div>
+                                              <div className="tagData2"> {localState.data} </div>
+                                              <div className="tagValue"> : <input type="text" style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value) } required/> </div>
+                                          </div>
+                                      )) }
+                                  </div>
+    
+                                  <div className="saveButtons">
+                                      <button type="submit" className="saveButtons"> Save </button> 
+                                      <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
+                                      <button className="saveButtons" onClick = {closeComparison}> Close </button>
+                                  </div>
+                                </form>
                             </div>
           </Modal>
           {/**************************************************************************** 1st Modal ****************************************************************************/}
@@ -401,24 +463,29 @@ const Map = () => {
                                 <br></br>
                                 <div> Select a color to this country <input type = "color" value = {changeColor} onChange={e => setChangeColor(e.target.value)}/>  </div>
                                 <br></br>
-                                <input type="file" onChange={e => setMyImage(e.target.files[0])}/>
-                                <br></br>
-
+                                {/* <input type="file" onChange={e => setMyImage(e.target.files[0])} accept="image/x-png,image/gif,image/jpeg"/> */}
                                 <div>
+                                    <input type='file' onChange={onSelectFile} accept="image/x-png,image/gif,image/jpeg"/>
+                                    {myImage &&  <img src={preview} /> }
+                                </div>                                
+                                <br></br>
+                                        
+                                <form onSubmit = {saveCountryData}>
+                                  <div>
                                     { inputTagData.map((localState) =>(
                                         <div>
                                             <div className="tagData2"> {localState.data} </div>
-                                            <div className="tagValue"> : <input type="text" placeholder = {countryTagValues[localState.length]} style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value)}/> </div>
-                                            {/* <div> {} </div> */}
+                                            <div className="tagValue"> : <input type="text" placeholder = {countryTagValues[localState.length]} style={{width: "10vw"}} onBlur={e => tagHandler(localState.data, e.target.value) } required/> </div>
                                         </div>
                                     )) }
-                                </div>
+                                  </div>
   
-                                <div className="saveButtons">
-                                    <button className="saveButtons" onClick = {saveCountryData}> Save </button> 
-                                    <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
-                                    <button className="saveButtons" onClick = {closeComparison}> Close </button>
-                                </div>
+                                  <div className="saveButtons">
+                                      <button type="submit" className="saveButtons"> Save </button> 
+                                      <button className="saveButtons" onClick= {removeCountryData}> Remove </button>  
+                                      <button className="saveButtons" onClick = {closeComparison}> Close </button>
+                                  </div>
+                                </form>
                             </div>
           </Modal>
           {/**************************************************************************** 2nd Modal ****************************************************************************/}

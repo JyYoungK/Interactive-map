@@ -98,6 +98,7 @@ const Home = (props) => {
         if (countryData.length >= 2 ) {
             console.log("Comparison Opened. These are the available country data: ");
             console.log(countryData)
+            
             for (var i = 0; i < countryData.length - 2; i++) {
                 console.log(countryData[i])
                 listofcountries.push(countryData[i].id + ", ")
@@ -108,8 +109,12 @@ const Home = (props) => {
             //Columns
             columns.push({field: 'id', headerName: 'COUNTRY', width: 150})
             columns.push({field: 'tag1value', headerName: countryData[0].tag1name, width: 160})
-            columns.push({field: 'tag2value', headerName: countryData[0].tag2name, width: 160})
-            columns.push({field: 'tag3value', headerName: countryData[0].tag3name, width: 160})
+            if (countryData[0].tagLength === 2){
+                columns.push({field: 'tag2value', headerName: countryData[0].tag2name, width: 160})
+            }
+            if (countryData[0].tagLength === 3){
+                columns.push({field: 'tag3value', headerName: countryData[0].tag3name, width: 160})
+            }
 
             setCompareModalIsOpen(true);
             //setlistofcountries([]); //Resets so that it doesn't add up.
@@ -125,10 +130,11 @@ const Home = (props) => {
             console.log(countryData)
             for (var i = 0; i < countryData.length; i++) {
                 dataofcountries.push(<span key={i}> 
-                {countryData[i].id}{firstTagResult(i)},{secondTagResult(i)},{thirdTagResult(i)}. 
+                {countryData[i].id}{firstTagResult(i)}{secondTagResult(i)}{thirdTagResult(i)}. 
                 <br></br>
-                {additionalText(i)}
+                {/* {additionalText(i)} */}
                 <br></br>
+                
                 <br></br>
                 </span>)
             }
@@ -140,24 +146,28 @@ const Home = (props) => {
     }
 
     function firstTagResult(i){
-        if (countryData[i].tag1Value > 0){
-            return " has a " + countryData[i].tag1Name + " of " + countryData[i].tag1Value
+        if ((countryData[i].tag1value).length > 0 && (countryData[i].tagLength >= 1)){
+            return " has a " + countryData[i].tag1name + " of " + countryData[i].tag1value
         }
         return " has no data available"
     }
 
     function secondTagResult(i){
-        if (countryData[i].tag2Value > 0){
-            return " has a " + countryData[i].tag2Name + " of " + countryData[i].tag2Value
+        if ((countryData[i].tag2value).length > 0 && (countryData[i].tagLength >= 2)){
+            return ", has a " + countryData[i].tag2name + " of " + countryData[i].tag2value
         }
-        return " has no data available"
+        else if (countryData[i].tagLength >= 2){
+            return ", has no data available"
+        }
     }
 
     function thirdTagResult(i){
-        if (countryData[i].tag3Value > 0){
-            return " has a " + countryData[i].tag3Name + " of " + countryData[i].tag3Value
+        if ((countryData[i].tag3value).length > 0 && (countryData[i].tagLength === 3)){
+            return ", has a " +countryData[i].tag3name + " of " + countryData[i].tag3value
         }
-        return " and has no data available"
+        else if (countryData[i].tagLength >= 3){
+            return ", has no data available"
+        }    
     }
 
     function additionalText(i){
@@ -322,14 +332,14 @@ const Home = (props) => {
                             </div>
                         </Modal>
                     </li>
-                    <li className='nav-item'>
+                    {/* <li className='nav-item'>
                         <Link
                         to='/share'
                         className='nav-links'
                         >
                         Share
                         </Link>
-                    </li>
+                    </li> */}
                     <li className='nav-item'>
                         <button className='logout nav-links' onClick={handleLogout}>Logout</button>
                     </li>

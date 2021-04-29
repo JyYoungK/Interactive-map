@@ -77,40 +77,43 @@ export default function App (){
     userExists.once("value")
     .then(function(userinDB){
         for (var i = 0; i < (countryData.length); i++) {
-          storage.ref("users/User:" + user.uid + "/" + mapTitle + "/" + countryData[i].ISO).put(countryData[i].image);
+          //Storing image
+          storage.ref("users/User:" + user.uid + "/" + mapTitle + "/" + countryData[i].ISO + "/" + i).put(countryData[i].image);
 
-          if (userinDB.exists()){ //if a map exists under a username 
-            //1. Choose to update (Change here if you add more data)--------------------------------------------------------
-            firebase.database().ref("users/User:" + user.uid + '/' + mapTitle + '/Obj' + i).update({
-              CountryISO: countryData[i].ISO,
-              CountryColor: countryData[i].color,
-              ArrayIndex : countryData[i].arrayIndex,
-              CountryText : countryData[i].countryText,
-              TagLength: countryData[i].tagLength,
-              Tag1Name: countryData[i].tag1name,
-              Tag1Value: countryData[i].tag1value,
-              Tag2Name: countryData[i].tag2name,
-              Tag2Value: countryData[i].tag2value,
-              Tag3Name: countryData[i].tag3name,
-              Tag3Value: countryData[i].tag3value,
-              Name: countryData[i].id,
-            });
-          }
-          else{ //Create a new map under a username (Change here if you add more data)--------------------------------------------------------
-            usersRef.child("User:" + user.uid).child(mapTitle + '/Obj' + i).update({
-              CountryISO: countryData[i].ISO,
-              CountryColor: countryData[i].color,
-              ArrayIndex : countryData[i].arrayIndex,
-              CountryText : countryData[i].countryText,
-              TagLength: countryData[i].tagLength,
-              Tag1Name: countryData[i].tag1name,
-              Tag1Value: countryData[i].tag1value,
-              Tag2Name: countryData[i].tag2name,
-              Tag2Value: countryData[i].tag2value,
-              Tag3Name: countryData[i].tag3name,
-              Tag3Value: countryData[i].tag3value,
-              Name: countryData[i].id,
-            });
+          if (countryData[i].tagLength>0){
+              if (userinDB.exists()){ //if a map exists under a username 
+                //1. Choose to update (Change here if you add more data)--------------------------------------------------------
+                firebase.database().ref("users/User:" + user.uid + '/' + mapTitle + '/Obj' + i).update({
+                  CountryISO: countryData[i].ISO,
+                  CountryColor: countryData[i].color,
+                  ArrayIndex : countryData[i].arrayIndex,
+                  CountryText : countryData[i].countryText,
+                  TagLength: countryData[i].tagLength,
+                  Tag1Name: countryData[i].tag1name,
+                  Tag1Value: countryData[i].tag1value,
+                  Tag2Name: countryData[i].tag2name,
+                  Tag2Value: countryData[i].tag2value,
+                  Tag3Name: countryData[i].tag3name,
+                  Tag3Value: countryData[i].tag3value,
+                  Name: countryData[i].id,
+                });
+              }
+              else{ //Create a new map under a username (Change here if you add more data)--------------------------------------------------------
+                usersRef.child("User:" + user.uid).child(mapTitle + '/Obj' + i).update({
+                  CountryISO: countryData[i].ISO,
+                  CountryColor: countryData[i].color,
+                  ArrayIndex : countryData[i].arrayIndex,
+                  CountryText : countryData[i].countryText,
+                  TagLength: countryData[i].tagLength,
+                  Tag1Name: countryData[i].tag1name,
+                  Tag1Value: countryData[i].tag1value,
+                  Tag2Name: countryData[i].tag2name,
+                  Tag2Value: countryData[i].tag2value,
+                  Tag3Name: countryData[i].tag3name,
+                  Tag3Value: countryData[i].tag3value,
+                  Name: countryData[i].id,
+                });
+              }
           }
         }
     });
@@ -158,7 +161,7 @@ export default function App (){
        console.log("Loading a selected map called " + mapTitle[e] + "...");
        objData.forEach(child =>{ //this but older style.
          cData.push(child.val());
-         tagLength = child.val().TagLength;  
+         tagLength = child.val().TagLength;
          tag1v = child.val().Tag1Name;
          tag2v = child.val().Tag2Name;
          tag3v = child.val().Tag3Name;
@@ -176,7 +179,7 @@ export default function App (){
                 tag3Name: child.val().Tag3Name,
                 tag1Value: child.val().Tag1Value,
                 tag2Value: child.val().Tag2Value,
-                tag3Value: child.val().Tag3Value, 
+                tag3Value: child.val().Tag3Value,
               });
          });
 
@@ -190,11 +193,16 @@ export default function App (){
               if (country.properties.ISO_A3 === cData[j].CountryISO){
                 country.properties.color = cData[j].CountryColor;
                 country.properties.countryText = ": " + cData[j].CountryText;
+                // storage.ref("users/User:" + user.uid + "/" + mapTitle + "/" + countryData[i].ISO + "/" + i).put(countryData[i].image);
+                // storageRef.child("file.png").getDownloadURL()
+                var imageref = storage.ref("users/User:" + user.uid + "/" + mapTitle[e] + "/" + country.properties.ISO_A3 + "/" + 0).getDownloadURL();
+                country.properties.image = imageref;
               }
             }
             countries.push(country)
          }
         // Importing Tag
+         setInputTagData([]); //Reset so it doesn't add up
          if (tagLength === 1){
           setInputTagData([... inputTagData, {
             data: tag1v,
