@@ -49,3 +49,14 @@
     flex-direction: column;
     align-items: left;
 }
+
+.copyaddress{
+
+    margin-top: 20%;
+    resize: none;
+    border: none;
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color:teal;
+    width: 100%;
+    font-size: large;
+}

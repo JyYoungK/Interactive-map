@@ -17,6 +17,7 @@ const AuthProvider = (props) => {
     const [countryEvent, setCountryEvent] = useState([]);
     const [myImage, setMyImage] = useState(null);
     const [imageofcountries, setimageofcountries] = useState([]);
+    const [maplink, setmaplink] = useState("");
 
     const authContextValue = {
         user, setUser,
@@ -33,6 +34,7 @@ const AuthProvider = (props) => {
         inputTagValue, setInputTagValue,
         myImage, setMyImage,
         imageofcountries, setimageofcountries,
+        maplink, setmaplink,
   };
   return <AuthContext.Provider value= {authContextValue} {...props}/>
 };

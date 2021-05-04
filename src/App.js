@@ -9,7 +9,7 @@ import { features } from "./data/countries.json";
 import {storage} from './config/fire';
 
 export default function App (){
-  const { user, setUser, mapTitle, setMapTitle, countryData, setColoredMap, setCountryData, inputTagData, setInputTagData, imageofcountries, setimageofcountries} = useGlobalState();
+  const { user, setUser, mapTitle, setMapTitle, countryData, setColoredMap, setCountryData, inputTagData, setInputTagData, imageofcountries, setimageofcountries, maplink} = useGlobalState();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -153,16 +153,38 @@ export default function App (){
 
   const load = (e) => {
 
-    // Importing Data--------------------------------------------------------------------------------------------------------
-    var Dataref = database.ref("users/User:" + user.uid + "/" + mapTitle[e]);
     setCountryData([]); //Reset so it doesn't add up
     setimageofcountries([]);
 
-    Dataref.on("value", function(objData) {
+    if (e !== 5){
+        // Importing My Data--------------------------------------------------------------------------------------------------------
+        var Dataref = database.ref("users/User:" + user.uid + "/" + mapTitle[e]);
+    }
+    else {
+        // Importing Other's Data---------------------------------------------------------------------------------------------------
+        var Dataref = database.ref("users/User:" + maplink);
+        database.ref("users/User:" + maplink).once("value",snapshot => {
+          if (snapshot.exists()){
+            console.log("Map exists!");
+          }
+          else{
+            alert("Following map link does not exist! Please check the link again.")
+            console.log("Map does not exists!");
+          }
+        });
 
+    }
+
+    Dataref.on("value", function(objData) {
        let cData = [];
        let tagLength, tag1v, tag2v, tag3v;
-       console.log("Loading a selected map called " + mapTitle[e] + "...");
+       if (e !== 5){
+          console.log("Loading a selected map called " + mapTitle[e] + "...");
+       }
+       else{
+          console.log("Loading a map from a user:" + maplink.split("/")[0] + " ...");
+          console.log("Loading a selected map called " + maplink.split("/")[1] + "...");
+       }
        objData.forEach(child =>{ //this but older style.
          cData.push(child.val());
          tagLength = child.val().TagLength;
@@ -197,31 +219,45 @@ export default function App (){
     
             for (let j = 0; j < cData.length; j++){
               if (country.properties.ISO_A3 === cData[j].CountryISO){
-                console.log(cData.length)
                 console.log(cData[j])
                 country.properties.color = cData[j].CountryColor;
                 country.properties.countryText = ": " + cData[j].CountryText;
-                storage.ref("users/User:" + user.uid + "/" + mapTitle[e] + "/" + country.properties.ISO_A3 + "/0").getDownloadURL().then(url => {
-                  setimageofcountries((prevImageofCountries) => {
-                    return prevImageofCountries
-                      .concat({
-                        ISO: country.properties.ISO_A3,
-                        Image: url,
-                      })
+                if (e !== 5){
+                  storage.ref("users/User:" + user.uid + "/" + mapTitle[e] + "/" + country.properties.ISO_A3 + "/0").getDownloadURL().then(url => {
+                    setimageofcountries((prevImageofCountries) => {
+                      return prevImageofCountries
+                        .concat({
+                          ISO: country.properties.ISO_A3,
+                          Image: url,
+                        })
+                    });
                   });
-                });
+                }
+                else{
+                  storage.ref("users/User:" + maplink + "/" + country.properties.ISO_A3 + "/0").getDownloadURL().then(url => {
+                    setimageofcountries((prevImageofCountries) => {
+                      return prevImageofCountries
+                        .concat({
+                          ISO: country.properties.ISO_A3,
+                          Image: url,
+                        })
+                    });
+                  });
+                }
               }
             }
             countries.push(country)
          }
         //  imageofcountries.shift(); //Removes 1st element
          // Importing Tag--------------------------------------------------------------------------------------------------------
+         
 
          setInputTagData([]); //Reset so it doesn't add up
          if (tagLength === 1){
           setInputTagData([{
             data: tag1v,
           }]); 
+          console.log("Importing 1 tag... : " + tag1v)
          }
 
          if (tagLength === 2){
@@ -234,6 +270,7 @@ export default function App (){
                   data : tag2v, 
                 });
            });
+           console.log("Importing 2 tags... : " + tag1v + ", " + tag2v)
          }
 
          if (tagLength === 3){
@@ -243,7 +280,7 @@ export default function App (){
           setInputTagData((prevCountryData) => { 
             return prevCountryData
                 .concat({
-                  data : tag3v, 
+                  data : tag2v, 
                 });
            });
            setInputTagData((prevCountryData) => { 
@@ -252,6 +289,7 @@ export default function App (){
                   data : tag3v, 
                 });
            });
+           console.log("Importing 3 tags... : " + tag1v + ", " + tag2v + ", " + tag3v)
          }
 
          setColoredMap(countries);  

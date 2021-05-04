@@ -1,10 +1,9 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import './navComponent/pages.css';
 import './Modal.css';
 import { useGlobalState } from "./global-context";
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import LoadMap from './navComponent/LoadMap';
-import Share from './navComponent/Share';
 import Modal from 'react-modal';
 import { Form } from 'semantic-ui-react';
 import { DataGrid } from '@material-ui/data-grid';
@@ -17,22 +16,25 @@ const Home = (props) => {
     const [map, setMap] = useState('Map1');
     const [listofcountries, setlistofcountries] = useState([]);
     const [dataofcountries, setdataofcountries] = useState([]);
-    const {mapTitle, setMapTitle, setMyMapTitle, countryData, imageofcountries, inputTagData} = useGlobalState();
+    const {user, mapTitle, setMapTitle, setMyMapTitle, countryData, imageofcountries, inputTagData, maplink, setmaplink} = useGlobalState();
     const {handleLogout, save, preload, load, remove } = props;
     const [saveModalIsOpen, setSaveModalIsOpen] = useState(false);
     const [LoadModalIsOpen, setLoadModalIsOpen] = useState(false);
     const [CompareModalIsOpen, setCompareModalIsOpen] = useState(false);
     const [SummarizeModalIsOpen, setSummarizeModalIsOpen] = useState(false);
+    const [ShareModalIsOpen, setShareModalIsOpen] = useState(false);
+    const [copySuccess, setCopySuccess] = useState('');
+    const textAreaRef = useRef(null);
     const modalStyle = {
         overlay: {
             zIndex: 10,
         },
         content: {
             position: 'absolute',
-            top: '35%',
+            top: '15%',
             left: '40%',
             right: '40%',
-            bottom: '35%',
+            bottom: '45%',
             border: '1px solid #ccc',
             backgroundColor: 'white',
             overflow: 'auto',
@@ -53,6 +55,27 @@ const Home = (props) => {
             left: '15%',
             right: '15%',
             bottom: '15%',
+            border: '1px solid #ccc',
+            backgroundColor: 'white',
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            borderRadius: '4px',
+            outline: 'none',
+            padding: '20px',
+            zIndex: 10,
+        }
+    };
+
+    const shareModalStyle = {
+        overlay: {
+            zIndex: 10,
+        },
+        content: {
+            position: 'absolute',
+            top: '35%',
+            left: '35%',
+            right: '35%',
+            bottom: '35%',
             border: '1px solid #ccc',
             backgroundColor: 'white',
             overflow: 'auto',
@@ -115,7 +138,7 @@ const Home = (props) => {
         }
     }
 
-    function summarize(){
+    function summarize(){ //Summary
         if (countryData.length >= 1 ) {
             console.log("Summarize opened. These are the available country data: ");
             for (var i = 0; i < countryData.length; i++) {
@@ -140,6 +163,10 @@ const Home = (props) => {
         else{
             alert("Please select at least 1 country to show the summary!")
         }
+    }
+
+    function share(){
+        setShareModalIsOpen(true);
     }
 
     function firstTagResult(i){
@@ -192,15 +219,29 @@ const Home = (props) => {
             console.log("Map title " + mapTitle[3] + " has been selected");
             load(3); setMyMapTitle(mapTitle[3])
         }
-        else{
+        else if (map === 'Map5'){
             console.log("Map title " + mapTitle[4] + " has been selected");
             load(4); setMyMapTitle(mapTitle[4])      
         }
+        else if (map === 'Map6'){
+            console.log("Map title " + maplink.split("/")[1] + " has been selected");
+            load(5);  
+        }
     }
+
+    function copyToClipboard(e) {
+        textAreaRef.current.select();
+        document.execCommand('copy');
+        // This is just personal preference.
+        // I prefer to not show the whole text area selected.
+        e.target.focus();
+        setCopySuccess('Copied!');
+      };
 
     function closeComparison(){
         setCompareModalIsOpen(false)
         setSummarizeModalIsOpen(false)
+        setShareModalIsOpen(false)
         setlistofcountries([]);//Reset so it doesn't add up
         setdataofcountries([]);//Reset so it doesn't add up
     }
@@ -227,7 +268,7 @@ const Home = (props) => {
                     YorkU MyMap
                 </Link>
                 <ul className={'nav-menu active'}>
-                    <li className='nav-item'>
+                    <li className='nav-item'> {/* ------------------------ Save ------------------------ */}
                         <button className='logout nav-links' onClick={moreThanOneCountry}>Save</button>
                         <Modal isOpen={saveModalIsOpen} //Modal open depends on setModal
                         ariaHideApp={false} //Hides annoying error
@@ -245,7 +286,7 @@ const Home = (props) => {
                             </div>
                         </Modal>
                     </li>
-                    <li className='nav-item'>
+                    <li className='nav-item'> {/* ------------------------ Load ------------------------ */}
                     <button className='logout nav-links' onClick={loadCountry}>Load</button>
                         <Modal isOpen={LoadModalIsOpen} //Modal open depends on setModal
                         ariaHideApp={false} //Hides annoying error
@@ -255,6 +296,7 @@ const Home = (props) => {
                             <div className="saveContents">
                                 <h2 style={{margin: "5%"}}> Load </h2>
                                 <p>Your list of maps (Maximum 5) </p>
+                                <br></br>
                                 <Form.Group inline>
                                     <div style={{display: 'flex'}}>
                                         <Form.Radio label={mapTitle[0]} checked={map === 'Map1'} value="Map1" onClick={() => setMap('Map1')}/>
@@ -276,16 +318,21 @@ const Home = (props) => {
                                         <Form.Radio label={mapTitle[4]} checked={map === 'Map5'} value="Map5" onClick={() => setMap('Map5')}/>
                                         <div className={mapTitle[4]} onClick={handleRemoveConfirm}> {'-----x'} </div>
                                     </div>
+                                    <div style={{display: 'flex'}}>
+                                        <Form.Radio label="Import other's map" checked={map === 'Map6'} onClick={() => setMap('Map6')}/>
+                                    </div>
+                                    <input type="text" placeholder= "Enter a link" onBlur={event => setmaplink(event.target.value)}/>
+
                                 </Form.Group>
 
-                                <div className="saveButtons">
+                                <div className="loadButtons">
                                     <button onClick = {loaded}>Load</button> 
                                     <button onClick = {() => setLoadModalIsOpen(false)}> Close </button>
                                 </div>
                             </div>
                         </Modal>
                     </li>
-                    <li className='nav-item'>
+                    <li className='nav-item'> {/* ------------------------ Compare ------------------------ */}
                     <button className='logout nav-links' onClick={moreThanTwoCountries}>Compare</button>
                         <Modal isOpen={CompareModalIsOpen} //Modal open depends on setModal
                         ariaHideApp={false} //Hides annoying error
@@ -309,7 +356,7 @@ const Home = (props) => {
                             </div>
                         </Modal>
                     </li>
-                    <li className='nav-item'>
+                    <li className='nav-item'> {/* ------------------------ Summary ------------------------ */}
                     <button className='logout nav-links' onClick={summarize}>Summary</button>
                         <Modal isOpen={SummarizeModalIsOpen} //Modal open depends on setModal
                         ariaHideApp={false} //Hides annoying error
@@ -329,22 +376,41 @@ const Home = (props) => {
                             </div>
                         </Modal>
                     </li>
-                    {/* <li className='nav-item'>
-                        <Link
-                        to='/share'
-                        className='nav-links'
+                    <li className='nav-item'> {/* ------------------------ Share ------------------------ */}
+                    <button className='logout nav-links' onClick={share}>Share</button>
+                        <Modal isOpen={ShareModalIsOpen} //Modal open depends on setModal
+                        ariaHideApp={false} //Hides annoying error
+                        onRequestClose={closeComparison} //Closes the modal if clicked outside of modal or esc
+                        style={ shareModalStyle }
                         >
-                        Share
-                        </Link>
-                    </li> */}
-                    <li className='nav-item'>
+                            <div className="compareContents">
+                                <div>
+                                    <h3> Copy this link to share this map! </h3>
+                                </div>
+
+                                    <div>
+                                        <textarea
+                                        ref={textAreaRef}
+                                        value={user.uid + "/" + mapTitle}
+                                        className = "copyaddress"
+                                        />
+                                    </div>
+                                    
+                                <div className="shareButtons">
+                                    <button onClick={copyToClipboard}>Copy</button> 
+                                    <button onClick = {closeComparison}> Close </button>
+                                </div>
+                                {copySuccess}
+                            </div>
+                        </Modal>
+                    </li>
+                    <li className='nav-item'> {/* ------------------------ Logout ------------------------ */}
                         <button className='logout nav-links' onClick={handleLogout}>Logout</button>
                     </li>
                 </ul>
             </nav>
             <Switch>
                 <Route path='/' exact component={LoadMap} />
-                <Route path='/share' component={Share} />
                 {/* <button className='logout' onClick={handleLogout}>Logout</button> */}
             </Switch>
             </Router>
