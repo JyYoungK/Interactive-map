@@ -9,7 +9,7 @@ import { features } from "./data/countries.json";
 import {storage} from './config/fire';
 
 export default function App (){
-  const { user, setUser, mapTitle, setMapTitle, countryData, setColoredMap, setCountryData, inputTagData, setInputTagData,} = useGlobalState();
+  const { user, setUser, mapTitle, setMapTitle, countryData, setColoredMap, setCountryData, inputTagData, setInputTagData, imageofcountries, setimageofcountries} = useGlobalState();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -78,7 +78,7 @@ export default function App (){
     .then(function(userinDB){
         for (var i = 0; i < (countryData.length); i++) {
           //Storing image
-          storage.ref("users/User:" + user.uid + "/" + mapTitle + "/" + countryData[i].ISO + "/" + i).put(countryData[i].image);
+          storage.ref("users/User:" + user.uid + "/" + mapTitle + "/" + countryData[i].ISO + "/0").put(countryData[i].image);
 
           if (countryData[i].tagLength>0){
               if (userinDB.exists()){ //if a map exists under a username 
@@ -152,8 +152,12 @@ export default function App (){
   }
 
   const load = (e) => {
+
+    // Importing Data--------------------------------------------------------------------------------------------------------
     var Dataref = database.ref("users/User:" + user.uid + "/" + mapTitle[e]);
-    
+    setCountryData([]); //Reset so it doesn't add up
+    setimageofcountries([]);
+
     Dataref.on("value", function(objData) {
 
        let cData = [];
@@ -174,16 +178,18 @@ export default function App (){
                 ISO: child.val().CountryISO,
                 countryText : child.val().CountryText,  
                 id : child.val().Name,
-                tag1Name: child.val().Tag1Name,
-                tag2Name: child.val().Tag2Name,
-                tag3Name: child.val().Tag3Name,
-                tag1Value: child.val().Tag1Value,
-                tag2Value: child.val().Tag2Value,
-                tag3Value: child.val().Tag3Value,
+                tag1name: child.val().Tag1Name,
+                tag2name: child.val().Tag2Name,
+                tag3name: child.val().Tag3Name,
+                tag1value: child.val().Tag1Value,
+                tag2value: child.val().Tag2Value,
+                tag3value: child.val().Tag3Value,
+                tagLength: child.val().TagLength,
               });
          });
+        });
 
-         console.log(child.val().Name + " has following properties. " + "Array Index: " + child.val().ArrayIndex + ", ISO: " + child.val().CountryISO + ", Color: " + child.val().CountryColor + ", Text: " + child.val().CountryText);     
+        //  console.log(child.val().Name + " has following properties. " + "Array Index: " + child.val().ArrayIndex + ", ISO: " + child.val().CountryISO + ", Color: " + child.val().CountryColor + ", Text: " + child.val().CountryText);     
 
          for (let i = 0; i < features.length; i++) { //
             const country = features[i];
@@ -191,26 +197,35 @@ export default function App (){
     
             for (let j = 0; j < cData.length; j++){
               if (country.properties.ISO_A3 === cData[j].CountryISO){
+                console.log(cData.length)
+                console.log(cData[j])
                 country.properties.color = cData[j].CountryColor;
                 country.properties.countryText = ": " + cData[j].CountryText;
-                // storage.ref("users/User:" + user.uid + "/" + mapTitle + "/" + countryData[i].ISO + "/" + i).put(countryData[i].image);
-                // storageRef.child("file.png").getDownloadURL()
-                var imageref = storage.ref("users/User:" + user.uid + "/" + mapTitle[e] + "/" + country.properties.ISO_A3 + "/" + 0).getDownloadURL();
-                country.properties.image = imageref;
+                storage.ref("users/User:" + user.uid + "/" + mapTitle[e] + "/" + country.properties.ISO_A3 + "/0").getDownloadURL().then(url => {
+                  setimageofcountries((prevImageofCountries) => {
+                    return prevImageofCountries
+                      .concat({
+                        ISO: country.properties.ISO_A3,
+                        Image: url,
+                      })
+                  });
+                });
               }
             }
             countries.push(country)
          }
-        // Importing Tag
+        //  imageofcountries.shift(); //Removes 1st element
+         // Importing Tag--------------------------------------------------------------------------------------------------------
+
          setInputTagData([]); //Reset so it doesn't add up
          if (tagLength === 1){
-          setInputTagData([... inputTagData, {
+          setInputTagData([{
             data: tag1v,
           }]); 
          }
 
          if (tagLength === 2){
-          setInputTagData([... inputTagData, {
+          setInputTagData([{
             data: tag1v,
           }]); 
           setInputTagData((prevCountryData) => { 
@@ -222,7 +237,7 @@ export default function App (){
          }
 
          if (tagLength === 3){
-          setInputTagData([... inputTagData, {
+          setInputTagData([{
             data: tag1v,
           }]); 
           setInputTagData((prevCountryData) => { 
@@ -241,7 +256,6 @@ export default function App (){
 
          setColoredMap(countries);  
        });
-    });
   }
 
   const remove = (removeTitle) => {

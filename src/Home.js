@@ -11,24 +11,13 @@ import { DataGrid } from '@material-ui/data-grid';
 
 // import {storage} from './config/fire';
 
-const columns = [
-    // { field: 'id', headerName: 'COUNTRY', width: 140 },
-    // { field: 'population', headerName: 'POPULATION', width: 160 },
-    // { field: 'birthrate', headerName: 'BIRTH RATE', width: 160 },
-    // { field: 'deathrate', headerName: 'DEATH RATE', width: 160 },
-    // { field: 'fullName', headerName: 'Full name', description: 'This column has a value getter and is not sortable.',
-    //   sortable: false,
-    //   width: 160,
-    //   valueGetter: (params) =>
-    //     `${params.getValue('firstName') || ''} ${params.getValue('lastName') || ''}`,
-    // },
-  ];
+const columns = [];
   
 const Home = (props) => {
     const [map, setMap] = useState('Map1');
     const [listofcountries, setlistofcountries] = useState([]);
     const [dataofcountries, setdataofcountries] = useState([]);
-    const {mapTitle, setMapTitle, setMyMapTitle, countryData} = useGlobalState();
+    const {mapTitle, setMapTitle, setMyMapTitle, countryData, imageofcountries, inputTagData} = useGlobalState();
     const {handleLogout, save, preload, load, remove } = props;
     const [saveModalIsOpen, setSaveModalIsOpen] = useState(false);
     const [LoadModalIsOpen, setLoadModalIsOpen] = useState(false);
@@ -76,11 +65,14 @@ const Home = (props) => {
     };
 
     function moreThanOneCountry(){ //Save
-        if (countryData.length >= 1 ) {
+        if (countryData.length >= 1 && inputTagData.length>0) {
             setSaveModalIsOpen(true);
         }
+        else if(inputTagData.length===0){
+            alert("Please include at least one tag and fill the value!")
+        } 
         else{
-            alert("Please select at least 1 country to save!")
+            alert("Please select at least 1 country!")
         }
     }
 
@@ -100,7 +92,6 @@ const Home = (props) => {
             console.log(countryData)
             
             for (var i = 0; i < countryData.length - 2; i++) {
-                console.log(countryData[i])
                 listofcountries.push(countryData[i].id + ", ")
             }
             listofcountries.push(countryData[countryData.length-2].id + " and ")
@@ -109,7 +100,7 @@ const Home = (props) => {
             //Columns
             columns.push({field: 'id', headerName: 'COUNTRY', width: 150})
             columns.push({field: 'tag1value', headerName: countryData[0].tag1name, width: 160})
-            if (countryData[0].tagLength === 2){
+            if (countryData[0].tagLength >= 2){
                 columns.push({field: 'tag2value', headerName: countryData[0].tag2name, width: 160})
             }
             if (countryData[0].tagLength === 3){
@@ -127,16 +118,22 @@ const Home = (props) => {
     function summarize(){
         if (countryData.length >= 1 ) {
             console.log("Summarize opened. These are the available country data: ");
-            console.log(countryData)
             for (var i = 0; i < countryData.length; i++) {
                 dataofcountries.push(<span key={i}> 
+                <br></br>
                 {countryData[i].id}{firstTagResult(i)}{secondTagResult(i)}{thirdTagResult(i)}. 
                 <br></br>
                 {/* {additionalText(i)} */}
-                <br></br>
-                
+                <br></br>                
                 <br></br>
                 </span>)
+                for (var j = 0; j < imageofcountries.length; j++){
+                    if (countryData[i].ISO === imageofcountries[j].ISO){
+                        dataofcountries.push(<span key={j}> 
+                            <img src={imageofcountries[j].Image} height = "250" width = "350"/>
+                        </span>)
+                    }
+                }
             }
             setSummarizeModalIsOpen(true);
         }
@@ -146,14 +143,14 @@ const Home = (props) => {
     }
 
     function firstTagResult(i){
-        if ((countryData[i].tag1value).length > 0 && (countryData[i].tagLength >= 1)){
+        if (countryData[i].tagLength >= 1){
             return " has a " + countryData[i].tag1name + " of " + countryData[i].tag1value
         }
         return " has no data available"
     }
 
     function secondTagResult(i){
-        if ((countryData[i].tag2value).length > 0 && (countryData[i].tagLength >= 2)){
+        if (countryData[i].tagLength >= 2){
             return ", has a " + countryData[i].tag2name + " of " + countryData[i].tag2value
         }
         else if (countryData[i].tagLength >= 2){
@@ -162,7 +159,7 @@ const Home = (props) => {
     }
 
     function thirdTagResult(i){
-        if ((countryData[i].tag3value).length > 0 && (countryData[i].tagLength === 3)){
+        if (countryData[i].tagLength === 3){
             return ", has a " +countryData[i].tag3name + " of " + countryData[i].tag3value
         }
         else if (countryData[i].tagLength >= 3){

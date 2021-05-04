@@ -19,8 +19,6 @@ const Map = () => {
   const [countryTagValues, setCountryTagValues] = useState([]);
   const [countryName, setCountryName] = useState("");
   const [preview, setPreview] = useState()
-  const [Samplestate, setSampleState] = useState([])
-
 
   const modalStyle = {
     overlay: {
@@ -76,24 +74,28 @@ const Map = () => {
     // inputTagData.map((localState) =>(
     //   console.log("show me smth " + localState.data)
     // ))
-      console.log("Selected country: " + event.target.feature.properties.ADMIN)
-      console.log("country tag values: ")
-
-      console.log(event.target.feature.properties)
-      console.log(preview)
-
-      setCountryName(event.target.feature.properties.ADMIN)
-      setCountryEvent(event);     
-      if (event.target.feature.properties.tagLength > 0){
-        console.log("Opening a modal with data")
-        setCountryModal2IsOpen(true);
-        countryValues(event);
-      } 
-      else {
-        console.log("Opening a fresh modal")
-        setCountryModalIsOpen(true);
-      }     
-  } ;
+      console.log(inputTagData)
+      // if (inputTagData.length > 0){
+        console.log("Selected country: " + event.target.feature.properties.ADMIN)
+        console.log("country tag values: ")
+        console.log(preview)
+  
+        setCountryName(event.target.feature.properties.ADMIN)
+        setCountryEvent(event);     
+        if (event.target.feature.properties.tagLength > 0){
+          console.log("Opening a modal with data")
+          setCountryModal2IsOpen(true);
+          countryValues(event);
+        } 
+        else {
+          console.log("Opening a fresh modal")
+          setCountryModalIsOpen(true);
+        }
+      // }
+      // else{
+      //   alert("Please insert at least 1 tag!")
+      // }
+  } 
 
   function countryValues(event){
     if (event.target.feature.properties.tagLength === 1){
@@ -325,16 +327,10 @@ const Map = () => {
   }
 
   function saveCountryData () {
-    
-      // if (inputTagValue.length !== inputTagData.length){
-      //   alert("Please fill all the values!")
-      // }
-      // else{
-        storeCountryData();
-        setCountryModalIsOpen(false);
-        setInputTagValue([]);//Reset so it doesn't add up     
-        setCountryTagValues([]);//Reset so it doesn't add up
-      // }
+    storeCountryData();
+    setCountryModalIsOpen(false);
+    setInputTagValue([]);//Reset so it doesn't add up     
+    setCountryTagValues([]);//Reset so it doesn't add up
   }
 
   function removeCountryData () {
@@ -381,7 +377,7 @@ const Map = () => {
     }]);  
   }
 
-  //File Image Display
+  //File Image Display---------------------------------------------------
   useEffect(() => {
     if (!myImage) {
         setPreview(undefined)
@@ -393,7 +389,7 @@ const Map = () => {
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl)
-}, [myImage])
+  }, [myImage])
 
   const onSelectFile = e => {
 
@@ -429,7 +425,7 @@ const Map = () => {
                                 <div>
                                     <input type='file' onChange={onSelectFile} accept="image/x-png,image/gif,image/jpeg"/>
                                     <br></br>
-                                    {myImage &&  <img src={preview} height = "250" width = "320" /> }
+                                    {myImage &&  <img src={preview} height = "250" width = "350" /> }
                                 </div>
                                 <br></br>
                                 <form onSubmit = {saveCountryData}>
